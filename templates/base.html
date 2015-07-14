@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    {% block head %}
+      <title>{% block title %}{{site_name}}{% endblock %}</title>
+      <link href='http://fonts.googleapis.com/css?family=Cabin:400,600|Ubuntu:700|Droid+Serif' rel='stylesheet' type='text/css'>
+      <link rel="stylesheet" type="text/css" href="static/css/main.css">
+    {% endblock %}
+  </head>
+
+  <body>
+    <div id="page-wrap">
+      {% block header %}
+      <div id="site-header">
+        <header id="header-title">
+          <a id="header-link" href="./"><h1>{{site_name | dewidow}}</h1></a>
+        </header>
+        <nav id="header-navbar">
+          <ul>
+            <li><a href="./quiz">Take the Quiz</a></li>
+            <li><a href="./systems">About the Systems</a></li>
+            <li><a href="./about">About This Site</a></li>
+          </ul>
+        </nav>
+      </div>
+      {% endblock %}
+
+      <content id="site-content">
+        {% block content %}{% endblock %}
+      </content>
+    </div>
+
+    <div class="clearfix"></div>
+
+    <footer id="site-footer">
+      {% block footer %}
+        Created by the Coalition for Changing Votes
+      {% endblock %}
+    </footer>
+  </body>
+
+</html>

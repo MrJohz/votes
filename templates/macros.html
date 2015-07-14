@@ -1,0 +1,24 @@
+{% macro systemcard(id, float=false) %}
+  {% set system = systems[id] %}
+  <div class="system-card {% if float %}card-float-{{float}}{% endif %}">
+    <input type="checkbox" class="card-toggle" id="toggle-{{id}}">
+    <label class="card" for="toggle-{{id}}">
+      <h2>{{system.name | dewidow}}</h2>
+
+      <div class="card-snippet">
+        <ul>{% for i in system.information %}<li>{{i | dewidow}}</li>{% endfor %}</ul>
+      </div>
+      <div class="card-detail">
+        {{system.description}}
+        {% if system.links %}
+          <h3>External Links</h3>
+          <ul>
+            {% for link in system.links %}
+              <li><a href="{{link.site}}">{{link.name}}</a></li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+    </label>
+  </div>
+{% endmacro %}

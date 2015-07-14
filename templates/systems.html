@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% import 'macros.html' as macros %}
+
+{% block title %}
+Systems | {{super()}}
+{% endblock %}
+
+{% block content %}
+
+  <h1>What are the options?</h1>
+
+  {% for id in systems %}
+    {{ macros.systemcard(id, float=loop.cycle('left', 'right')) }}
+  {% endfor %}
+
+{% endblock %}

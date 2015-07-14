@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% import 'macros.html' as macros %}
+
+{% block title %}
+Results | {{super()}}
+{% endblock %}
+
+{% block content %}
+
+  {% if perfect_systems %}
+
+    <h1>There is a perfect system for you!</h1>
+    {% if (perfect_systems | length) > 1 %}
+      <h2>In fact, there are {{perfect_systems | length}}...</h2>
+    {% endif %}
+
+    <div id="perfect">
+      {% for system in perfect_systems %}
+        {{ macros.systemcard(system, float=loop.cycle('left', 'right')) }}
+      {% endfor %}
+    </div>
+
+  {% else %}
+
+    <h1>There isn't a perfect system for you</h1>
+    {% if (best_systems | length) > 1 %}
+      <h2>But these are the closest matches...</h2>
+    {% else %}
+      <h2>But this is the closest match...</h2>
+    {% endif %}
+
+    <div id="best">
+      {% for system in best_systems %}
+        {{ macros.systemcard(system, float=loop.cycle('left', 'right')) }}
+      {% endfor %}
+    </div>
+
+  {% endif %}
+
+{% endblock %}

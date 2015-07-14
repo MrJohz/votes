@@ -1,0 +1,37 @@
+<h1>How would you vote for a&nbsp;government?</h1>
+
+<div id="questions">
+
+  <form method="post" action="{{baseurl}}/quiz">
+    {% for q_id, question in questions.items() %}
+      <div class="question-div">
+        <h2 class="question">
+          {{ question.text | dewidow }}
+        </h2>
+        <div class="question-help">
+          {{ question.explanation | dewidow }}
+        </div>
+        <ul>
+          {% for a_id, answer in question.answers.items() %}
+            <li>
+              <input type="radio" id="answer-{{q_id}}-{{a_id}}"
+                     name="{{q_id}}" value="{{a_id}}" />
+              <label for="answer-{{q_id}}-{{a_id}}">
+                {{ answer.text | dewidow }}
+              </label>
+            </li>
+          {% endfor %}
+          <li>
+            <input type="radio" id="answer-{{q_id}}-ignore"
+                   name="{{q_id}}" value="ignore" />
+            <label for="answer-{{q_id}}-ignore">
+              This issue is not important to&nbsp;me
+            </label>
+          </li>
+        </ul>
+      </div>
+    {% endfor %}
+    <input type="submit" />
+  </form>
+
+</div>

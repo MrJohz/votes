@@ -1,0 +1,243 @@
+@import "theme";
+@import "utils";
+
+html, body {
+  width: 100%;
+  font-family: 'Cabin', sans-serif;
+  background-color: $background;
+  color: $text-color;
+
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+#site-header {
+  text-align: center;
+
+  header {
+    font-size: 1.5em;
+    padding: 0.5em;
+    border-bottom: 0.5em solid $text-color;
+    text-align: center;
+    font-family: 'Ubuntu', sans-serif;
+
+    #header-link {
+      color: $text-color;
+      text-decoration: none;
+    }
+
+    h1 {
+      margin: 0.5em 0 0.2em 0;
+    }
+
+    & + nav {
+      display: inline-block;
+      border-bottom: 0.5em solid $text-color;
+      margin: 0 auto 1.4em auto;
+
+      ul {
+        margin: 0.18em 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      li {
+        padding: 0.5em 1em;
+        display: inline-block;
+      }
+
+      a {
+        color: $text-color;
+        text-decoration: none;
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+content {
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 400;
+    margin-bottom: 0.4em;
+  }
+
+  h1 {
+    margin-top: 0.8em;
+    padding: 0.3em 0;
+    border-bottom: 0.1em solid $text-color;
+  }
+
+  display: block;
+  width: 85%;
+  @include breakpoint(big) {
+    width: 70%;
+  };
+  margin: 1em auto;
+
+  &::after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+}
+
+#page-wrap { // magic for sticky footer
+  min-height: 100%;
+  margin-bottom: -1.5em;
+  &::after {
+    content: '';
+    display: block;
+  }
+}
+
+.clearfix {
+  clear: both;
+}
+
+footer, #page-wrap::after {
+  height: 1.5em;
+}
+
+footer {
+  display: block;
+  padding: 0.8em 0 0.5em 0;
+  border-top: 0.4em solid $text-color;
+  text-align: center;
+  font-family: 'Ubuntu', sans-serif;
+}
+
+// This should only deal with the frontpage 'intro' panel
+#intro-page {
+  min-height: 100vh;
+  border-bottom: 0.75em solid $text-color;
+}
+
+// This should only deal with the question page & associated form.
+#questions {
+  .question-help {
+    display: block;
+    font-size: 0.8em;
+    width: 90%;
+    margin: 0 auto;
+    color: lighten($text-color, 30);
+    padding-bottom: 0.3em;
+    font-family: 'Droid Serif', serif;
+    text-align: justify;
+    @include breakpoint(big, mbig) {
+      width: 94%;
+    }
+  }
+
+  ul {
+    margin: 0.7em 3em 1.8em 3em;
+    padding: 0;
+    list-style-type: none;
+
+    li {
+      position: relative;
+      padding: 0.2em 0;
+
+      input[type="radio"] {
+        display: none;
+      }
+
+      input[type="radio"] + label {
+        cursor: pointer;
+        &::before {
+          @include shadow($height: 1, $magic: false);
+          box-sizing: border-box;
+          line-height: 0.4em;
+          text-indent: 0.1em;
+          font-size: 2em;
+          position: absolute;
+          left: -1em;
+          display: block;
+          content: '';
+          height: 0.6em;
+          width: 0.6em;
+          border: 1px solid $text-color;
+          border-radius: 1em;
+          transition: border-width 0.1s;
+        }
+        &:hover::before {
+          @include shadow($height: 1.5, $magic: false);
+        }
+      }
+
+      input[type="radio"]:checked + label::before {
+        border-width: 0.2em;
+      }
+    }
+  }
+
+  input[type="submit"] {
+    @include shadow($height: 1);
+    cursor: pointer;
+    font-family: 'Cabin', sans-serif;
+    //font-family: 'Ubuntu', sans-serif;
+    font-size: 1.5em;
+    display: block;
+    width: 80%;
+    margin: 0.7em auto;
+    background-color: $background;
+    border: 1px solid $text-color;
+    padding: 0.5em;
+    border-radius: 1em;
+  }
+}
+
+// This displays cards containing the details of the current system
+.system-card {
+  display: block;
+  margin: 0;
+  padding: 1em;
+  width: 100%;
+  @include breakpoint(big, mbig) {
+    width: 50%;
+  };
+  box-sizing: border-box;
+
+  &.card-float-left {
+    float: left;
+  }
+
+  &.card-float-right {
+    float: right;
+  }
+
+  & > .card-toggle {
+    position: absolute;
+    margin-left: -99999px;
+    &:checked {
+      & ~ .card > .card-snippet {
+        display: none;
+      }
+    }
+    &:not(:checked) {
+      & ~ .card > .card-detail {
+        display: none;
+      }
+    }
+  }
+  & > .card {
+    @include shadow($height: 1);
+    border: 1px solid $text-color;
+    position: relative;
+    display: block;
+    padding: 1em;
+    cursor: pointer;
+    @include breakpoint(big, mbig) {
+      min-height: 15em;
+    }
+    transition: height 2s;
+
+    h2 {
+      margin-top: 0;
+    }
+
+    ul {
+      padding: 0 1.5em;
+    }
+  }
+}

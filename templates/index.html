@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <div id="intro-page">
+    {{super()}}
+    <content id="introduction">
+
+      <h1>We need to talk about voting.</h1>
+
+      <p>
+        The 2015 General Election was the most disproportionate in history.  Nearly half of the MPs elected recieved less than 50% of the vote in their area.  50% of the votes in the election went to losing candidates.  The Conservative Party recieved less than 40% of the vote, yet won a majority in parliament.  In a poll taken just before the election, 61% of participants said that they believe our electoral system needs to be reformed.  So let's talk about those reforms.  <!-- TODO: cite: http://www.electoral-reform.org.uk/blog/system-crisis, http://www.independent.co.uk/news/uk/politics/generalelection/general-election-2015-sixty-per-cent-of-people-want-voting-reform-says-survey-10224354.html, http://www.bbc.co.uk/news/election/2015/results -->
+      </p>
+
+      <h1>What is a voting system?</h1>
+
+      <p>
+        A voting system is simply a way of making a choice.  In this case, that choice decides who will govern the United Kingdom for the next five years, so it's important that everyone gets the chance to make that choice fairly, and equally.  That means that it's important what voting system we use.
+      </p>
+
+      <h1>What voting systems exist?</h1>
+
+      <p>
+        There are a lot of ways to elect a government.  Currently, the House of Commons is elected using First-Past-The-Post.  Many people believe that a better solution would be Proportional Representation, a form of which is currently used to elect MEPs.  The Electoral Reform Society in the UK champions Single Transferable Vote, which has many similarities with the Alternative Vote system, which we voted on in 2010.  If you voted in the election for Mayor of London you will have used Supplementary Vote, while the Scottish Parliament, National Assembly for Wales, and London Assembly all use the Additional Member System.  Outside of the UK, the number of voting systems explodes.
+      </p>
+
+      <h1>So which one's the best?</h1>
+
+      <p>
+        The answer to that lies in how you define "best" - and that's where we come in!  Different voting systems offer different pros and cons, and it's often very different to balance those pros and cons when all you've got is a list of systems.  So here, we're going the opposite direction.  This site asks questions about what your perfect voting system would look like, and then uses your answers to try and calculate what real-life system best matches that.
+      </p>
+
+    </content>
+  </div>
+{% endblock %}
+
+{% block content %}
+  {% include 'questions_snippet.html' %}
+{% endblock %}

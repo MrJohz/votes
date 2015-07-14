@@ -1,14 +1,19 @@
+from configparser import ConfigParser
 import cherrypy
 from votes import VoteApplication, components, utils
 
-application = VoteApplication(data=utils.ordered_load('data.yml'),
+config = ConfigParser()
+config.read('votes.conf')
+
+application = VoteApplication(data=utils.ordered_load('data.yml'), config=config,
     routes={
-        '/quiz': components.Quiz.builder(),
-        '/results': components.Results.builder(),
-        '/systems': components.Systems.builder(),
-        '/index': components.Static.builder(page='index.html'),
-        '/about': components.Static.builder(page='about.html')
+        'index': components.Static.factory(page='index.html'),
+        'about': components.Static.factory(page='about.html'),
+        'quiz': components.Quiz.factory(),
+        'results': components.Results.factory(),
+        'systems': components.Systems.factory(),
+        'static': components.Assets.factory()
     }
 )
 
-cherrypy.quickstart(application, '/')
+cherrypy.quickstart(application, '/', 'votes.conf')

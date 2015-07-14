@@ -1,0 +1,36 @@
+@mixin remove-linkiness {
+  & > a {
+    color: inherit;
+    text-decoration: none;
+  }
+}
+
+@mixin shadow($height: 1, $magic: true) {
+  box-shadow: 0px (3px * $height) (4px * $height) rgba(0,0,0,0.7);
+
+  @if $magic {
+    position: relative;
+
+    &:hover {
+      box-shadow: 0px (3px * $height * 1.5) (4px * $height * 1.5) rgba(0,0,0,0.7);
+      top: $height * -2px
+    }
+  }
+}
+
+@mixin breakpoint($points...) {
+  @each $point in $points {
+    @if $point == big {
+      @media only screen and (min-width: 1020px) { @content; }
+    }
+    @else if $point == mbig {
+      @media only screen and (max-width: 1019px) and (min-width: 840px) { @content; }
+    }
+    @else if $point == msmall {
+      @media only screen and (max-width: 839px) and (min-width: 640px) { @content; }
+    }
+    @else if $point == small {
+      @media only screen and (max-width: 639px)  { @content; }
+    }
+  }
+}
