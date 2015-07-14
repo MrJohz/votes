@@ -12,7 +12,7 @@ class QuickEnum(object):
 
     def __init__(self, **kwargs):
         for key, val in kwargs.items():
-            setattr(self, val)
+            setattr(self, key, val)
 
 
 def ordered_load(filename, Loader=yaml.Loader, object_pairs_hook=OrderedDict):

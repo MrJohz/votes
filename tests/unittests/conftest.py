@@ -1,21 +1,28 @@
 import pytest
-import yaml
-from collections import OrderedDict
-
-
-def ordered_load(stream, Loader=yaml.Loader, object_pairs_hook=OrderedDict):
-    class OrderedLoader(Loader):
-        pass
-    def construct_mapping(loader, node):
-        loader.flatten_mapping(node)
-        return object_pairs_hook(loader.construct_pairs(node))
-    OrderedLoader.add_constructor(
-        yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
-        construct_mapping)
-    return yaml.load(stream, OrderedLoader)
 
 
 @pytest.fixture
 def data():
-    with open('data.yml') as f:
-        return ordered_load(f, yaml.SafeLoader)
+    return {
+        'systems': ['sys1', 'sys2', 'sys3'],
+        'questions': {
+            'systems1&2': {
+                'answers': {
+                    'a1': {'systems': ['sys1', 'sys2']},
+                    'a2': {'systems': ['sys3']}
+                }
+            },
+            'system3': {
+                'answers': {
+                    'a1': {'systems': ['sys3']},
+                    'a2': {'systems': ['sys1', 'sys2']}
+                }
+            },
+            'systems2&3': {
+                'answers': {
+                    'a1': {'systems': ['sys2', 'sys3']},
+                    'a2': {'systems': ['sys1']}
+                }
+            }
+        }
+    }
