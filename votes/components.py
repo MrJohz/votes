@@ -27,6 +27,9 @@ class Quiz(BaseComponent):
     winner_kind = utils.QuickEnum(perfect='perfect', best='best')
 
     def determine(self, results):
+        if not results:
+            raise ValueError("Need at least one result to use")
+
         system_votes = Counter()
         system_opportunities = Counter()
         for question_id, answer_id in results.items():
@@ -35,7 +38,7 @@ class Quiz(BaseComponent):
             elif answer_id == 'ignore':
                 continue
 
-            answers = data['questions'][question_id]['answers']
+            answers = self.data['questions'][question_id]['answers']
             if answer_id not in answers:
                 continue
 
@@ -46,14 +49,37 @@ class Quiz(BaseComponent):
                 for sys in answer['systems']:
                     system_opportunities[sys] += 1
 
-        vote_percentage = [()]
-        return self.winner_kind.perfect, ['fptp']
+        votes = []
+        for sys in self.data['systems']:
+            if system_opportunities[sys] > 0:
+                votes.append((system_votes[sys] / system_opportunities[sys], sys))
+        votes.sort()
+
+        if not votes:  # impossible?
+            raise ValueError("No votes counted")
+
+        perfect = []
+        best = []
+        for vote in votes:
+            if vote[0] == 1:
+                perfect.append(vote)
+            elif perfect:
+                break
+            elif not best or vote[0] >= best[0][0]:
+                best.append(vote)
+            else:
+                break
+
+        if perfect:
+            return self.winner_kind.perfect, [i[1] for i in perfect], votes
+        else:
+            return self.winner_kind.best, [i[1] for i in best], votes
 
     def GET(self):
         return self.template('questions.html')
 
     def POST(self, **kwargs):
-        winner_kind, systems = self.determine(kwargs)
+        winner_kind, systems, votes = self.determine(kwargs)
         querystr = urlencode({'winner': winner_kind, 'systems': ','.join(systems)})
         url = '/results?' + querystr
         raise HTTPRedirect(url)
