@@ -85,7 +85,8 @@ class Assets(BaseComponent):
         return cherrypy.lib.static.serve_file(os.path.join(directory, asset))
 
     def get_css(self, asset):
-        if self.app.conf('static', 'on_the_fly_compile'):
+        if self.app.conf('static', 'on_the_fly_compile', True):
             scss_dir = self.app.conf('static', 'css_source_dir')
+            # TODO: this
         directory = self.app.conf('static', 'css_dir')
         return cherrypy.lib.static.serve_file(os.path.join(directory, asset))

@@ -3,6 +3,8 @@ from functools import lru_cache
 
 import jinja2
 
+conf_default = object()
+
 class VoteApplication(object):
 
     def __init__(self, data, config, routes):
@@ -25,5 +27,9 @@ class VoteApplication(object):
             setattr(self, url, component)
 
     @lru_cache(maxsize=None)
-    def conf(self, section, key):
-        return eval(self._config[section][key])
+    def conf(self, section, key, default=conf_default):
+        value = self._config[section].get(key)
+        if value is None and default is not conf_default:
+            return default
+        else:
+            return eval(self._config[section][key])
