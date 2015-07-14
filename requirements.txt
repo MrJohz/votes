@@ -1,0 +1,2 @@
+CherryPy==3.8.0
+PyYAML==3.11
