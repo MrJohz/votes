@@ -5,6 +5,7 @@ from votes import VoteApplication, DatabasePlugin, components, utils
 
 config = ConfigParser()
 config.read('votes.conf')
+config.read('votes-private.conf')
 
 application = VoteApplication(data=utils.ordered_load('data.yml'), config=config,
     routes={

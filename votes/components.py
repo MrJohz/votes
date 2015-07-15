@@ -75,6 +75,8 @@ class Static(BaseComponent):
         self.page = page
 
     def GET(self):
+        with self.db as conn:
+            print(conn)
         return self.template(self.page)
 
 
