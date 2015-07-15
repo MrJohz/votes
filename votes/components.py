@@ -8,7 +8,7 @@ from collections import Counter
 import cherrypy
 import sass
 
-from . import utils, quiz
+from . import utils, quiz, models
 
 __all__ = ['BaseComponent', 'Quiz', 'Results', 'Systems', 'static_page', 'Static']
 
@@ -16,9 +16,8 @@ _BC_SENTINEL = object()
 
 class BaseComponent(object):
 
-    def __init__(self, app, data):
+    def __init__(self, app):
         self.app = app
-        self.data = data
 
     def template(self, template_name, **kwargs):
         kwargs.update(questions=self.data['questions'])
@@ -27,11 +26,8 @@ class BaseComponent(object):
     @property
     @contextlib.contextmanager
     def db(self):
-        conn = cherrypy.engine.publish('get-database')[0]
-        try:
-            yield conn
-        finally:
-            cherrypy.engine.publish('put-database', conn)
+        with models.database.execution_context as ctx:
+            yield
 
     @classmethod
     def factory(cls, **kwargs):
