@@ -1,4 +1,5 @@
 import os
+import contextlib
 
 from urllib.parse import urlencode
 from functools import partial
@@ -21,6 +22,15 @@ class BaseComponent(object):
     def template(self, template_name, **kwargs):
         kwargs.update(questions=self.data['questions'])
         return self.app.template_env.get_template(template_name).render(**kwargs)
+
+    @property
+    @contextlib.contextmanager
+    def db(self):
+        conn = cherrypy.engine.publish('get-database')[0]
+        try:
+            yield conn
+        finally:
+            cherrypy.engine.publish('put-database', conn)
 
     @classmethod
     def factory(cls, **kwargs):

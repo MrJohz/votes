@@ -1,6 +1,7 @@
 from configparser import ConfigParser
+import sqlite3
 import cherrypy
-from votes import VoteApplication, components, utils
+from votes import VoteApplication, DatabasePlugin, components, utils
 
 config = ConfigParser()
 config.read('votes.conf')
@@ -16,4 +17,5 @@ application = VoteApplication(data=utils.ordered_load('data.yml'), config=config
     }
 )
 
+DatabasePlugin(cherrypy.engine, application).subscribe()
 cherrypy.quickstart(application, '/', 'votes.conf')

@@ -1,9 +1,23 @@
 from collections import OrderedDict
 from functools import lru_cache
+import sqlite3
 
 import jinja2
 
+from .plugins import database
+
 conf_default = object()
+
+
+class DatabasePlugin(database.PooledDatabaseConnections):
+
+    def __init__(self, engine, app):
+        super().__init__(engine)
+        self.app = app
+
+    def connection_factory(self):
+        return sqlite3.connect(self.app.conf('database', 'file'))
+
 
 class VoteApplication(object):
 
