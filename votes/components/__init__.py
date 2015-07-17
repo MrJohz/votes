@@ -1,37 +1,15 @@
 import os
-import contextlib
 
 from urllib.parse import urlencode
-from functools import partial
 from collections import Counter
 
 import cherrypy
 import sass
 import peewee
 
-from . import utils, quiz, models
-
-__all__ = ['BaseComponent', 'Quiz', 'Results', 'Systems', 'static_page', 'Static']
-
-_BC_SENTINEL = object()
-
-class BaseComponent(object):
-
-    def __init__(self, app):
-        self.app = app
-
-    def template(self, template_name, **kwargs):
-        return self.app.template_env.get_template(template_name).render(**kwargs)
-
-    @property
-    @contextlib.contextmanager
-    def db(self):
-        with models.database.execution_context() as ctx:
-            yield
-
-    @classmethod
-    def factory(cls, **kwargs):
-        return partial(cls, **kwargs)
+from .. import utils, models
+from .base_components import BaseComponent, Static
+from .admin_components import AdminInterface
 
 
 class Quiz(BaseComponent):
@@ -100,16 +78,6 @@ class Systems(BaseComponent):
             return self.template('system.html', system=system)
 
 
-class Static(BaseComponent):
-
-    def __init__(self, page, *args, **kwargs):
-        super(Static, self).__init__(*args, **kwargs)
-        self.page = page
-
-    def GET(self):
-        return self.template(self.page)
-
-
 class Assets(BaseComponent):
 
     def GET(self, kind, asset):
@@ -135,8 +103,9 @@ class Assets(BaseComponent):
             scss_asset = os.path.splitext(asset)[0] + '.scss'
             scss_path = os.path.join(scss_dir, scss_asset)
             try:
-                if os.stat(scss_path).st_mtime > os.stat(css_path).st_mtime:
+                if ((not os.path.exists(css_path)) or os.stat(scss_path).st_mtime > os.stat(css_path).st_mtime):
                     css_source = sass.compile(filename=scss_path)
+                    os.makedirs(directory, exist_ok=True)
                     with open(css_path, mode='w') as f:
                         f.write(css_source)
             except:

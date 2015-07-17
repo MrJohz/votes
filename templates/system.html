@@ -1,0 +1,17 @@
+{% extends 'systems.html' %}
+
+{% block content %}
+
+  <h1>{{ system.name | dewidow }}</h1>
+
+  {{ system.data }}
+
+  <h2>External Links</h2>
+  <ul>
+    {% for link in system.links %}
+      <li><a href="{{link.link}}">{{link.name}}</a></li>
+    {% endfor %}
+  </ul>
+
+
+{% endblock %}

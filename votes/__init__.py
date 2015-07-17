@@ -29,8 +29,6 @@ class VoteApplication(object):
     def bind_routes(self, routes):
         for url, component_factory in routes.items():
             component = component_factory(app=self)
-            component.exposed = True
-            component.url = url
             setattr(self, url, component)
 
     @lru_cache(maxsize=None)

@@ -68,6 +68,29 @@ content {
     border-bottom: 0.1em solid $text-color;
   }
 
+  a {
+    position: relative;
+    box-sizing: border-box;
+    color: $text-color;
+    font-weight: 900;
+    text-decoration: none;
+    &:after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      left: 0;
+      bottom: 0;
+      height: 2px;
+      background-color: $text-color;
+    }
+
+    &:hover {
+      &:after {
+        height: 3px;
+      }
+    }
+  }
+
   display: block;
   width: 85%;
   @include breakpoint(big) {
@@ -225,6 +248,10 @@ footer {
       font-family: 'Ubuntu', sans-serif;
       color: $text-color;
       text-decoration: none;
+
+      &:after {
+        display: none;
+      }
 
       &:hover {
         @include shadow($height: 1.5, $magic: false);
