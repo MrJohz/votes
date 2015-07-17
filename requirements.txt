@@ -1,3 +1,7 @@
 CherryPy==3.8.0
 PyYAML==3.11
 libsass==0.8.2
+hashids==1.1.0
+peewee==2.6.3
+Jinja2==2.7.3
+Markdown==2.6.2

@@ -7,6 +7,7 @@ from collections import Counter
 
 import cherrypy
 import sass
+import peewee
 
 from . import utils, quiz, models
 
@@ -20,13 +21,12 @@ class BaseComponent(object):
         self.app = app
 
     def template(self, template_name, **kwargs):
-        kwargs.update(questions=self.data['questions'])
         return self.app.template_env.get_template(template_name).render(**kwargs)
 
     @property
     @contextlib.contextmanager
     def db(self):
-        with models.database.execution_context as ctx:
+        with models.database.execution_context() as ctx:
             yield
 
     @classmethod
@@ -36,33 +36,68 @@ class BaseComponent(object):
 
 class Quiz(BaseComponent):
 
+    def __init__(self, hasher, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.hasher = hasher
+
     def GET(self):
-        return self.template('questions.html')
+        with self.db:
+            questions = peewee.prefetch(models.Question.select(), models.Answer.select())
+            return self.template('questions.html', questions=questions)
 
     def POST(self, **kwargs):
-        winner_kind, systems, votes = quiz.determine(self.data, kwargs)
-        querystr = urlencode({'winner': winner_kind, 'systems': ','.join(systems)})
-        url = '/results?' + querystr
+        with self.db:
+            response = models.Response.create(arbitrary=False)
+            for question_id, answer_id in kwargs.items():
+                try:
+                    question_id = int(question_id)
+                    answer_id = int(question_id)
+                except ValueError:
+                    continue
+
+                try:
+                    answer = models.Answer.get(id=answer_id)
+                except models.Answer.DoesNotExist:
+                    continue
+
+                if answer.question.id != question_id:
+                    continue
+
+                response.answers.add(answer)
+            response.save()
+
+        url = '/results/' + self.hasher.encode(response.id)
         raise cherrypy.HTTPRedirect(url)
 
 
 class Results(BaseComponent):
 
-    def GET(self, winner, systems):
-        return self.template('results.html', winner=winner, systems=systems)
+    def __init__(self, hasher, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.hasher = hasher
+
+    def GET(self, hash_id):
+        try:
+            (response_id,) = self.hasher.decode(hash_id)
+        except ValueError:
+            raise cherrypy.NotFound()
+
+        response = models.Response.get(id=response_id)
+        return self.template('results.html', response=response)
 
 
 class Systems(BaseComponent):
 
-    def GET(self, system=None):
-        if system is None:
-            return self.template('systems.html')
+    def GET(self, sys_id=None):
+        if sys_id is None:
+            return self.template('systems.html', systems=models.System.select())
         else:
-            if system in self.data['systems']:
-                sys = self.data['systems'][system]
-                return self.template('system.html', system=sys)
-            else:
+            try:
+                system = models.System.get(id=sys_id)
+            except models.System.DoesNotExist:
                 raise cherrypy.NotFound()
+
+            return self.template('system.html', system=system)
 
 
 class Static(BaseComponent):

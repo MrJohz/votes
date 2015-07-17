@@ -1,26 +1,31 @@
 from collections import Counter
+from . import models
 
 PERFECT = 'perfect'
 BEST = 'best'
 
-def determine(data, results):
+def determine(results):
     if not results:
         raise ValueError("Need at least one result to use")
 
     system_votes = Counter()
     system_opportunities = Counter()
     for question_id, answer_id in results.items():
-        if question_id not in data['questions']:
-            continue
-        elif answer_id == 'ignore':
+        if answer_id == 'ignore':
             continue
 
-        answers = data['questions'][question_id]['answers']
-        if answer_id not in answers:
+        try:
+            question = models.Question.get(id=question_id)
+        except models.Question.DoesNotExist:
             continue
 
-        for sys in answers[answer_id]['systems']:
-            system_votes[sys] += 1
+        try:
+            answer = question.answers.where(id=answer_id).get()
+        except models.Answer.DoesNotExist:
+            continue
+
+        for sys in answer.systems:
+            system_votes[sys.id] += 1
 
         for answer in answers.values():
             for sys in answer['systems']:

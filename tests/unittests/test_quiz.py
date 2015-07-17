@@ -2,6 +2,7 @@ from votes import quiz
 
 import pytest
 
+@pytest.mark.xfail
 class TestQuiz(object):
 
     def test_quiz_determination(self, data):

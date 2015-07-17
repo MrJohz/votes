@@ -175,7 +175,6 @@ footer {
     @include shadow($height: 1);
     cursor: pointer;
     font-family: 'Cabin', sans-serif;
-    //font-family: 'Ubuntu', sans-serif;
     font-size: 1.5em;
     display: block;
     width: 80%;
@@ -188,56 +187,53 @@ footer {
 }
 
 // This displays cards containing the details of the current system
-.system-card {
+.system {
+  box-sizing: border-box;
   display: block;
-  margin: 0;
-  padding: 1em;
   width: 100%;
   @include breakpoint(big, mbig) {
     width: 50%;
-  };
-  box-sizing: border-box;
+  }
 
-  &.card-float-left {
+  padding: 0.8em;
+
+  &.system-float-left {
     float: left;
   }
 
-  &.card-float-right {
+  &.system-float-right {
     float: right;
   }
 
-  & > .card-toggle {
-    position: absolute;
-    margin-left: -99999px;
-    &:checked {
-      & ~ .card > .card-snippet {
-        display: none;
-      }
-    }
-    &:not(:checked) {
-      & ~ .card > .card-detail {
-        display: none;
-      }
-    }
-  }
-  & > .card {
-    @include shadow($height: 1);
-    border: 1px solid $text-color;
+  .system-card {
     position: relative;
-    display: block;
-    padding: 1em;
-    cursor: pointer;
+    border: 1px solid $text-color;
+    padding: 0 1em 3.5em 1em;
     @include breakpoint(big, mbig) {
-      min-height: 15em;
+      padding: 0 2em;
+      height: 19em;
     }
-    transition: height 2s;
 
-    h2 {
-      margin-top: 0;
+  .read-more {
+      @include shadow($height: 1, $magic: false);
+      position: absolute;
+      bottom: 1em;
+      right: 1em;
+      border: 1px solid $text-color;
+      padding: 0.7em;
+      border-radius: 3em;
+      font-family: 'Ubuntu', sans-serif;
+      color: $text-color;
+      text-decoration: none;
+
+      &:hover {
+        @include shadow($height: 1.5, $magic: false);
+        bottom: 1.1em;
+      }
     }
 
     ul {
-      padding: 0 1.5em;
+      padding-left: 1.5em;
     }
   }
 }

@@ -35,6 +35,7 @@ AnswerSystem = Answer.systems.get_through_model()
 
 
 class Response(BaseModel):
+    arbitrary = peewee.BooleanField()
     answers = ManyToManyField(Answer)
 
 ResponseAnswer = Response.answers.get_through_model()

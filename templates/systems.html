@@ -9,8 +9,20 @@ Systems | {{super()}}
 
   <h1>What are the options?</h1>
 
-  {% for id in systems %}
-    {{ macros.systemcard(id, float=loop.cycle('left', 'right')) }}
-  {% endfor %}
+  <div class="systems-container">
+    {% for system in systems %}
+      <div class="system system-float-{{loop.cycle('left', 'right')}}">
+        <div class="system-card">
+          <h2 class="system-header">{{ system.name | dewidow }}</h2>
+          <div class="system-bite">
+            {{ system.bite }}
+          </div>
+          <a class="read-more" href="{{base_url}}/systems/{{system.id}}">
+            Read more...
+          </a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
 
 {% endblock %}

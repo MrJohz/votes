@@ -3,28 +3,28 @@
 <div id="questions">
 
   <form method="post" action="{{baseurl}}/quiz">
-    {% for q_id, question in questions.items() %}
+    {% for question in questions %}
       <div class="question-div">
         <h2 class="question">
           {{ question.text | dewidow }}
         </h2>
         <div class="question-help">
-          {{ question.explanation | dewidow }}
+          {{ question.description | dewidow }}
         </div>
         <ul>
-          {% for a_id, answer in question.answers.items() %}
+          {% for answer in question.answers_prefetch %}
             <li>
-              <input type="radio" id="answer-{{q_id}}-{{a_id}}"
-                     name="{{q_id}}" value="{{a_id}}" />
-              <label for="answer-{{q_id}}-{{a_id}}">
+              <input type="radio" id="answer-{{question.id}}-{{answer.id}}"
+                     name="{{question.id}}" value="{{answer.id}}" />
+              <label for="answer-{{question.id}}-{{answer.id}}">
                 {{ answer.text | dewidow }}
               </label>
             </li>
           {% endfor %}
           <li>
-            <input type="radio" id="answer-{{q_id}}-ignore"
-                   name="{{q_id}}" value="ignore" />
-            <label for="answer-{{q_id}}-ignore">
+            <input type="radio" id="answer-{{question.id}}-ignore"
+                   name="{{question.id}}" value="ignore" />
+            <label for="answer-{{question.id}}-ignore">
               This issue is not important to&nbsp;me
             </label>
           </li>

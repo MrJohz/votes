@@ -1,4 +1,4 @@
-from collections import OrderedDict
+import collections
 import yaml
 
 
@@ -15,14 +15,25 @@ class QuickEnum(object):
             setattr(self, key, val)
 
 
-def ordered_load(filename, Loader=yaml.Loader, object_pairs_hook=OrderedDict):
-    with open(filename) as stream:
+def ordered_load(fn, Loader=yaml.Loader, mapper=collections.OrderedDict):
+    with open(fn) as stream:
         class OrderedLoader(Loader):
             pass
         def construct_mapping(loader, node):
             loader.flatten_mapping(node)
-            return object_pairs_hook(loader.construct_pairs(node))
+            return mapper(loader.construct_pairs(node))
         OrderedLoader.add_constructor(
             yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
             construct_mapping)
         return yaml.load(stream, OrderedLoader)
+
+
+def dewidow(string):
+    if len(string.split(' ')) > 3:
+        return "&nbsp;".join(string.rsplit(' ', 1))
+    else:
+        return string
+
+
+def double_paragraphs(string):
+    return string.replace('\n', '\n\n')
