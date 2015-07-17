@@ -3,6 +3,7 @@ from functools import lru_cache
 
 import jinja2
 import markdown
+import cherrypy
 
 from . import models as m
 from . import utils
