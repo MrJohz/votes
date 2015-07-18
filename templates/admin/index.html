@@ -4,8 +4,15 @@
 
   <h1>Admin Interface</h1>
 
-  <ul>
-    <li><a href="{{base_url}}/admin/systems">Modify Systems</a></li>
-    <li><a href="{{base_url}}/admin/questions">Modify Questions</a></li>
-  </ul>
+  <h2>Systems</h2>
+    <ul>
+      <li><a href="{{base_url}}/admin/systems">List all systems</a></li>
+      <li><a href="{{base_url}}/admin/systems/post">Create a new system</a></li>
+    </ul>
+
+  <h2>Questions</h2>
+    <ul>
+      <li><a href="{{base_url}}/admin/questions">List all questions</a></li>
+      <li><a href="{{base_url}}/admin/questions/post">Create a new question</a></li>
+    </ul>
 {% endblock %}

@@ -74,7 +74,7 @@ class Systems(BaseComponent):
         else:
             try:
                 system = models.System.get(id=sys_id)
-            except models.System.DoesNotExist:
+            except (models.System.DoesNotExist, ValueError):
                 raise cherrypy.NotFound()
 
             return self.template('system.html', system=system)

@@ -91,6 +91,39 @@ content {
     }
   }
 
+  textarea, input {
+    box-sizing: border-box;
+    @include shadow($height: 1, $magic: false);
+    padding: 0.2em;
+    border: 1px solid $text-color;
+    background-color: $background;
+    height: 2em;
+  }
+
+  input {
+    font-family: 'Cabin', sans-serif;
+
+    &[type="submit"] {
+      @include shadow($height: 1);
+      height: inherit;
+      cursor: pointer;
+      margin: 0.7em auto;
+      padding: 0.5em;
+      border-radius: 1em;
+    }
+  }
+
+  textarea {
+    width: 100%;
+    height: 8em;
+  }
+
+  input:invalid {
+    border-color: $error-color;
+    border-width: 2px;
+    background-color: lighten($error-color, 29);
+  }
+
   display: block;
   width: 85%;
   @include breakpoint(big) {
@@ -195,49 +228,57 @@ footer {
   }
 
   input[type="submit"] {
-    @include shadow($height: 1);
-    cursor: pointer;
-    font-family: 'Cabin', sans-serif;
+    height: inherit;
     font-size: 1.5em;
-    display: block;
     width: 80%;
-    margin: 0.7em auto;
-    background-color: $background;
-    border: 1px solid $text-color;
-    padding: 0.5em;
-    border-radius: 1em;
   }
 }
 
 // This displays cards containing the details of the current system
-.system {
+.card {
   box-sizing: border-box;
   display: block;
   width: 100%;
-  @include breakpoint(big, mbig) {
-    width: 50%;
-  }
 
   padding: 0.8em;
 
-  &.system-float-left {
+  &.card-float-left, &.card-float-right {
+    @include breakpoint(big, mbig) {
+      width: 50%;
+      .card-boxed {
+        height: 19em;
+      }
+    }
+  }
+
+  &.card-float-left {
     float: left;
   }
 
-  &.system-float-right {
+  &.card-float-right {
     float: right;
   }
 
-  .system-card {
+  .card-boxed {
     position: relative;
     border: 1px solid $text-color;
     padding: 0 1em 3.5em 1em;
     @include breakpoint(big, mbig) {
-      padding: 0 2em;
-      height: 19em;
+      padding: 0 2em 1em 2em;
     }
 
-  .read-more {
+    h2 {
+      input[type="text"] {
+        font-size: 1em;
+      }
+    }
+
+    input {
+      width: 40%;
+      margin: 0.5em;
+    }
+
+    .read-more {
       @include shadow($height: 1, $magic: false);
       position: absolute;
       bottom: 1em;

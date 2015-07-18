@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Systems</h1>
+
+  <div class="card-container">
+    <div class="card">
+      <div class="card-boxed">
+        <h2><a href="{{base_url}}/admin/systems/post">Create a new system</a></h2>
+      </div>
+    </div>
+    {% for system in systems %}
+      <div class="card">
+        <div class="card-boxed">
+          <h2>
+            {{system.name}}
+            <span class="icons">
+              <a href="{{base_url}}/systems/{{system.id}}">V</a>
+              <a href="{{base_url}}/admin/systems/{{system.id}}/put">E</a>
+              <a href="{{base_url}}/admin/systems/{{system.id}}/delete">D</a>
+            </span>
+          </h2>
+
+          <h3>Bite</h3>
+          {{system.bite}}
+
+          <h3>Description</h3>
+          {{system.data}}
+
+          <h3>Links</h3>
+          <ul>
+            {% for link in system.links %}
+              <li><a href="{{link.link}}">{{link.name}}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}

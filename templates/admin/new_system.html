@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>New System</h1>
+
+  <div class="card-container">
+    <div class="card">
+      <div class="card-boxed">
+        <form method="POST">
+          <h2>
+            Name:
+            <input type="text" placeholder="System Name" name="name"/>
+          </h2>
+
+          <h3>Bite</h3>
+          <textarea name="bite"></textarea>
+
+          <h3>Description</h3>
+          <textarea name="desc"></textarea>
+
+          <h3>Links</h3>
+          <p id="links-paragraph">
+            <span>
+              <input type="text" name="l-name"/>
+              <input type="url" name="l-url" />
+              <br />
+            </span>
+            <a href="javascript:newLink()">New Link</a>
+          </p>
+
+          <input type="submit" />
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  {{super()}}
+  <script>
+    function newLink() {
+      "use strict";
+      var linksPara = document.getElementById('links-paragraph');
+      var linkSpan = linksPara.children[0].cloneNode(true);
+
+      for (var i = 0; i < linkSpan.children.length; i++) {
+        linkSpan.children[i].value = '';
+      };
+
+      var lastSpan = linksPara.children[linksPara.children.length - 1];
+      linksPara.insertBefore(linkSpan, lastSpan);
+    }
+  </script>
+{% endblock %}

@@ -8,12 +8,12 @@ Systems | {{super()}}
 
   <h1>What are the options?</h1>
 
-  <div class="systems-container">
+  <div class="card-container">
     {% for system in systems %}
-      <div class="system system-float-{{loop.cycle('left', 'right')}}">
-        <div class="system-card">
-          <h2 class="system-header">{{ system.name | dewidow }}</h2>
-          <div class="system-bite">
+      <div class="card card-float-{{loop.cycle('left', 'right')}}">
+        <div class="card-boxed">
+          <h2 class="card-header">{{ system.name | dewidow }}</h2>
+          <div class="card-bite">
             {{ system.bite }}
           </div>
           <a class="read-more" href="{{base_url}}/systems/{{system.id}}">

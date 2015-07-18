@@ -19,6 +19,22 @@ def parse_params(system_id, action, out_of_order_params=('post', 'get')):
     return (system_id, action)
 
 
+def get_model_instance(model_id, model):
+    try:
+        return model.get(id=model_id)
+    except model.DoesNotExist:
+        raise cherrypy.NotFound()
+
+
+def destr(strist):
+    """Convert a thing that may be a string or a list into a list of strings"""
+    if strist is None:
+        return []
+    elif isinstance(strist, str):
+        return [strist]
+    return strist
+
+
 class AuthenticatedComponent(BaseComponent):
 
     def __init__(self, *args, **kwargs):
@@ -39,7 +55,34 @@ class SystemInterface(BaseComponent):
 
     def GET(self, system_id=None, action='get'):
         system_id, action = parse_params(system_id, action, ('post', 'get'))
-        return "authenticated!"
+
+        if (system_id, action) == (None, 'get'):
+            return self.template('admin/systems.html', systems=models.System.select())
+        elif (system_id, action) == (None, 'post'):
+            return self.template('admin/new_system.html')
+        elif action == 'put':
+            return self.template('admin/modify_system.html',
+                                 system=get_model_instance(system_id, models.System))
+        elif action == 'delete':
+            return self.template('admin/delete.html')
+        else:
+            raise cherrypy.NotFound()
+
+    def POST(self, system_id=None, action='get', **form):
+        system_id, action = parse_params(system_id, action, ('post', 'get'))
+
+        if (system_id, action) == (None, 'post'):
+            form['links'] = zip(destr(form.get('l-name')), destr(form.get('l-url')))
+            system = models.System.create(
+                name=form.get('name'),
+                bite=form.get('bite'),
+                data=form.get('desc'))
+
+            for name, link in form['links']:
+                models.Link.insert(system=system, name=name, link=link).execute()
+            raise cherrypy.HTTPRedirect("/systems/" + str(system.id))
+        else:
+            raise cherrypy.NotFound()
 
 
 class AdminInterface(AuthenticatedComponent):

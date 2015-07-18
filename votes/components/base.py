@@ -52,9 +52,12 @@ class BaseComponent(object):
 
 class Static(BaseComponent):
 
-    def __init__(self, page, *args, **kwargs):
-        super(Static, self).__init__(*args, **kwargs)
+    def __init__(self, page, args=None, *pargs, **kwargs):
+        super(Static, self).__init__(*pargs, **kwargs)
         self.page = page
+        self.args = args
+        if self.args is None:
+            self.args = {}
 
     def GET(self):
-        return self.template(self.page)
+        return self.template(self.page, **self.args)

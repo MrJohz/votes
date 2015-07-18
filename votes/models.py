@@ -19,7 +19,7 @@ class System(BaseModel):
 class Link(BaseModel):
     system = peewee.ForeignKeyField(System, related_name='links')
     name = peewee.CharField()
-    link = peewee.CharField()
+    link = peewee.CharField(unique=True)
 
 
 class Question(BaseModel):
