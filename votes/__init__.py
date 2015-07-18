@@ -6,7 +6,7 @@ import markdown
 import cherrypy
 
 from . import models as m
-from . import utils
+from . import utils, security
 
 conf_default = object()
 

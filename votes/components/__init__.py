@@ -8,8 +8,9 @@ import sass
 import peewee
 
 from .. import utils, models
-from .base_components import BaseComponent, Static
-from .admin_components import AdminInterface
+from .base import BaseComponent, Static
+
+from . import admin
 
 
 class Quiz(BaseComponent):
@@ -68,7 +69,8 @@ class Systems(BaseComponent):
 
     def GET(self, sys_id=None):
         if sys_id is None:
-            return self.template('systems.html', systems=models.System.select())
+            systems = models.System.select().order_by(peewee.fn.Random())
+            return self.template('systems.html', systems=systems)
         else:
             try:
                 system = models.System.get(id=sys_id)

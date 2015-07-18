@@ -9,7 +9,6 @@ from votes import VoteApplication, components, utils
 
 config = ConfigParser()
 config.read('votes.conf')
-config.read('votes-private.conf')
 
 app = VoteApplication(config=config)
 
@@ -24,7 +23,8 @@ app.bind_routes({
     'quiz': components.Quiz.factory(hasher=hasher),
     'results': components.Results.factory(hasher=hasher),
     'systems': components.Systems.factory(),
-    'static': components.Assets.factory()})
+    'static': components.Assets.factory(),
+    'admin': components.admin.AdminInterface.factory()})
 
 if __name__ == "__main__":
     import sys

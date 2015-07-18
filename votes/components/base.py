@@ -22,8 +22,14 @@ class BaseComponent(object):
 
     exposed = True
 
-    def __init__(self, app):
+    def __init__(self, app, config=None):
         self.app = app
+
+        if config is not None:
+            if hasattr(self, '_cp_config'):
+                self._cp_config.update(config)
+            else:
+                self._cp_config = config
 
         for key in dir(self):
             component = getattr(self, key)
