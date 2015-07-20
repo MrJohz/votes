@@ -3,6 +3,24 @@ import contextlib
 from . import models
 
 
+class DatabaseTool(cherrypy.Tool):
+
+    def __init__(self):
+        super().__init__(self, 'before_handler', self.load_db)
+
+    def _setup(self):
+        super()._setup()
+        cherrypy.request.hooks.attach('before_finalize', self.end_db)
+
+    def load_db(self):
+        models.database.connect()
+
+    def end_db(self):
+        models.database.close()
+
+cherrypy.tools.database_connect = DatabaseTool()
+
+
 class ComponentFactory(object):
 
     exposed = False
