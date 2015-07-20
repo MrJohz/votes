@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Take the Quiz | {{super()}}
+{% endblock %}
+
+{% block content %}
+  <h1>How would you vote for a&nbsp;government?</h1>
+
+  <div id="questions">
+
+    <form method="post" action="{{baseurl}}/quiz">
+      {% for question in questions %}
+        <div class="question-div">
+          <h2 class="question">
+            {{ question.text | dewidow }}
+          </h2>
+          <div class="question-help">
+            {{ question.description | dewidow }}
+          </div>
+          <ul>
+            {% for answer in question.answers_prefetch %}
+              <li>
+                <input type="radio" id="answer-{{question.id}}-{{answer.id}}"
+                       name="{{question.id}}" value="{{answer.id}}" />
+                <label for="answer-{{question.id}}-{{answer.id}}">
+                  {{ answer.text | dewidow }}
+                </label>
+              </li>
+            {% endfor %}
+            <li>
+              <input type="radio" id="answer-{{question.id}}-ignore"
+                     name="{{question.id}}" value="ignore" />
+              <label for="answer-{{question.id}}-ignore">
+                This issue is not important to&nbsp;me
+              </label>
+            </li>
+          </ul>
+        </div>
+      {% endfor %}
+      <input type="submit" />
+    </form>
+
+  </div>
+
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>New System</h1>
+
+  <div class="card-container">
+    <div class="card">
+      <div class="card-boxed">
+        <form method="POST">
+          <h2>
+            Name:
+            <input type="text" placeholder="System Name"
+                   name="name" {% if system %}value="{{system.name}}"{% endif %}/>
+          </h2>
+
+          <h3>Bite</h3>
+          <textarea name="bite">{% if system %}{{system.bite_md}}{% endif %}</textarea>
+
+          <h3>Description</h3>
+          <textarea name="desc">{% if system %}{{system.data_md}}{% endif %}</textarea>
+
+          <h3>Links</h3>
+          <p id="links-paragraph">
+            <script id="links-template" type="text/template">
+              <span>
+                <input type="text" name="l-name" />
+                <input type="url" name="l-url" />
+                <a href="javascript:void(0)" onclick="deleteLink(this.parentElement)"
+                   class="shadow fa fa-times"></a>
+                <br />
+              </span>
+            </script>
+
+            {% if system %}
+              {% for link in system.links %}
+                <span>
+                  <input type="text" name="l-name" value="{{link.name}}" />
+                  <input type="url" name="l-url" value="{{link.link}}" />
+                  <a href="javascript:void(0)" onclick="deleteLink(this.parentElement)"
+                     class="shadow fa fa-times"></a>
+                  <br />
+                </span>
+              {% endfor %}
+            {% endif %}
+
+            <span>
+              <input type="text" name="l-name"/>
+              <input type="url" name="l-url" />
+              <a href="javascript:void(0)" onclick="deleteLink(this.parentElement)"
+                 class="shadow fa fa-times"></a>
+              <br />
+            </span>
+            <a href="javascript:void(0)" onclick="newLink()">New Link</a>
+          </p>
+
+          <input type="submit" />
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  {{super()}}
+  <script>{% include 'static/js/modify_links.js' %}</script>
+{% endblock %}

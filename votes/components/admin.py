@@ -2,7 +2,7 @@ import contextlib
 import cherrypy
 
 from .base import BaseComponent, Static
-from .. import models, security
+from .. import models
 
 def parse_params(system_id, action, out_of_order_params=('post', 'get')):
     if system_id is None:
@@ -32,7 +32,7 @@ def destr(strist):
         return []
     elif isinstance(strist, str):
         return [strist]
-    return strist
+    return [s for s in strist if s.strip()]
 
 
 class AuthenticatedComponent(BaseComponent):
@@ -59,12 +59,13 @@ class SystemInterface(BaseComponent):
         if (system_id, action) == (None, 'get'):
             return self.template('admin/systems.html', systems=models.System.select())
         elif (system_id, action) == (None, 'post'):
-            return self.template('admin/new_system.html')
-        elif action == 'put':
+            return self.template('admin/modify_system.html')
+        elif system_id is not None and action == 'put':
             return self.template('admin/modify_system.html',
                                  system=get_model_instance(system_id, models.System))
-        elif action == 'delete':
-            return self.template('admin/delete.html')
+        elif system_id is not None and action == 'delete':
+            return self.template('admin/delete_system.html',
+                                 system=get_model_instance(system_id, models.System))
         else:
             raise cherrypy.NotFound()
 
@@ -75,12 +76,37 @@ class SystemInterface(BaseComponent):
             form['links'] = zip(destr(form.get('l-name')), destr(form.get('l-url')))
             system = models.System.create(
                 name=form.get('name'),
-                bite=form.get('bite'),
-                data=form.get('desc'))
+                bite_md=form.get('bite'),
+                bite=self.app.markdown(form.get('bite', '')),
+                data_md=form.get('desc'),
+                data=self.app.markdown(form.get('desc', '')))
 
             for name, link in form['links']:
                 models.Link.insert(system=system, name=name, link=link).execute()
             raise cherrypy.HTTPRedirect("/systems/" + str(system.id))
+        elif system_id is not None and action == 'put':
+            form['links'] = zip(destr(form.get('l-name')), destr(form.get('l-url')))
+            system = get_model_instance(system_id, models.System)
+            if form.get('name') and form['name'].strip():
+                system.name = form['name']
+            if form.get('bite') and form['bite'].strip():
+                system.bite_md = form['bite']
+                system.bite = self.app.markdown(form['bite'])
+            if form.get('desc') and form['desc'].strip():
+                system.data_md = form['desc']
+                system.data = self.app.markdown(form['desc'])
+
+            system.save()
+
+            models.Link.delete().where(models.Link.system == system).execute()
+            for name, link in form['links']:
+                models.Link.insert(system=system, name=name, link=link).execute()
+
+            raise cherrypy.HTTPRedirect('/admin/systems/' + str(system_id) + '/put')
+        elif system_id is not None and action == 'delete':
+            if form.get('delete', '').lower() == 'yes':
+                pass
+
         else:
             raise cherrypy.NotFound()
 

@@ -18,8 +18,8 @@ hasher = hashids.Hashids(
     min_length=app.conf('hashids', 'length', 5))
 
 app.bind_routes({
-    'index': components.Static.factory(page='index.html'),
-    'about': components.Static.factory(page='about.html'),
+    'index': components.Static.factory(page='site/index.html'),
+    'about': components.Static.factory(page='site/about.html'),
     'quiz': components.Quiz.factory(hasher=hasher),
     'results': components.Results.factory(hasher=hasher),
     'systems': components.Systems.factory(),

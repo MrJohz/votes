@@ -2,11 +2,11 @@ from collections import OrderedDict
 from functools import lru_cache
 
 import jinja2
-import markdown
+import mistune
 import cherrypy
 
 from . import models as m
-from . import utils, security
+from . import utils
 
 conf_default = object()
 
@@ -17,6 +17,8 @@ class VoteApplication(object):
         self._config = config
 
         m.database.init(self.conf('database', 'file'))
+
+        self.markdown = mistune.Markdown()
 
         self.template_env = jinja2.Environment(
             loader=jinja2.FileSystemLoader(self.conf('templating', 'directory')))
@@ -50,14 +52,14 @@ class VoteApplication(object):
 
         systems = data['systems']
         for sys in systems.values():
+            bite_md = "\n".join("- " + i for i in sys['information'])
+            bite = self.markdown(bite_md)
 
-            bite = "".join("<li>" + utils.dewidow(i) + "</li>" for i in sys['information'])
-            bite = "<ul>" + bite + "</ul>"
+            text_md = utils.double_paragraphs(sys['description']).strip()
+            text = self.markdown(text_md)
 
-            text = utils.double_paragraphs(sys['description'])
-            text = markdown.markdown(text)
-
-            db_system = m.System.create(name=sys['name'], bite=bite, data=text)
+            db_system = m.System.create(name=sys['name'], bite_md=bite_md, bite=bite,
+                                        data_md=text_md, data=text)
             for link in sys.get('links', []):
                 m.Link.create(system=db_system, name=link['name'],
                                     link=link['site'])

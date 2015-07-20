@@ -6,6 +6,7 @@ from collections import Counter
 import cherrypy
 import sass
 import peewee
+import jinja2
 
 from .. import utils, models
 from .base import BaseComponent, Static
@@ -22,7 +23,7 @@ class Quiz(BaseComponent):
     def GET(self):
         with self.db:
             questions = peewee.prefetch(models.Question.select(), models.Answer.select())
-            return self.template('questions.html', questions=questions)
+            return self.template('site/questions.html', questions=questions)
 
     def POST(self, **kwargs):
         with self.db:
@@ -62,7 +63,7 @@ class Results(BaseComponent):
             raise cherrypy.NotFound()
 
         response = models.Response.get(id=response_id)
-        return self.template('results.html', response=response)
+        return self.template('site/results.html', response=response)
 
 
 class Systems(BaseComponent):
@@ -70,18 +71,19 @@ class Systems(BaseComponent):
     def GET(self, sys_id=None):
         if sys_id is None:
             systems = models.System.select().order_by(peewee.fn.Random())
-            return self.template('systems.html', systems=systems)
+            return self.template('site/systems.html', systems=systems)
         else:
             try:
                 system = models.System.get(id=sys_id)
             except (models.System.DoesNotExist, ValueError):
                 raise cherrypy.NotFound()
 
-            return self.template('system.html', system=system)
+            return self.template('site/system.html', system=system)
 
 
 class Assets(BaseComponent):
 
+    @cherrypy.tools.response_headers(headers=[('Content-Type', 'application/javascript')])
     def GET(self, kind, asset):
         asset = os.path.basename(asset)
 
@@ -93,8 +95,10 @@ class Assets(BaseComponent):
             raise cherrypy.NotFound()
 
     def get_javascript(self, asset):
-        directory = self.app.conf('static', 'javascript_dir')
-        return cherrypy.lib.static.serve_file(os.path.join(directory, asset))
+        try:
+            return self.template('static/js/' + asset).encode('utf-8')
+        except jinja2.TemplateNotFound:
+            raise cherrypy.NotFound()
 
     def get_css(self, asset):
         directory = self.app.conf('static', 'css_dir')
@@ -104,6 +108,8 @@ class Assets(BaseComponent):
             scss_dir = self.app.conf('static', 'css_source_dir')
             scss_asset = os.path.splitext(asset)[0] + '.scss'
             scss_path = os.path.join(scss_dir, scss_asset)
+            if not os.path.exists(scss_path):
+                return cherrypy.lib.static.serve_file(css_path)
             try:
                 if ((not os.path.exists(css_path)) or os.stat(scss_path).st_mtime > os.stat(css_path).st_mtime):
                     css_source = sass.compile(filename=scss_path)

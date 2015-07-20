@@ -72,8 +72,11 @@ content {
     position: relative;
     box-sizing: border-box;
     color: $text-color;
-    font-weight: 900;
     text-decoration: none;
+  }
+
+  a:not(.shadow) {
+    font-weight: 900;
     &:after {
       content: '';
       position: absolute;
@@ -97,6 +100,7 @@ content {
     padding: 0.2em;
     border: 1px solid $text-color;
     background-color: $background;
+    color: $text-color;
     height: 2em;
   }
 

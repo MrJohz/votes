@@ -5,6 +5,7 @@
     {% block head %}
       <title>{% block title %}{{site_name}}{% endblock %}</title>
       <link href='http://fonts.googleapis.com/css?family=Cabin:400,600|Ubuntu:700|Droid+Serif' rel='stylesheet' type='text/css'>
+      <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
       <link rel="stylesheet" type="text/css" href="{{base_url}}/static/css/main.css">
     {% endblock %}
   </head>
@@ -40,20 +41,8 @@
     </footer>
 
     {% block scripts %}
-      <script>
-        console.log("                                                                                                                            ,---. ");
-        console.log(",--.   ,--.,------.,--.,------. ,------.    ,--.  ,--. ,-----. ,--------.    ,--.  ,--.,--.,------. ,--.,--.  ,--. ,----.   |   | ");
-        console.log("|  |   |  ||  .---'|  ||  .--. '|  .---'    |  ,'.|  |'  .-.  ''--.  .--'    |  '--'  ||  ||  .--. '|  ||  ,'.|  |'  .-./   |  .' ");
-        console.log("|  |.'.|  ||  `--, `-' |  '--'.'|  `--,     |  |' '  ||  | |  |   |  |       |  .--.  ||  ||  '--'.'|  ||  |' '  ||  | .---.|  |  ");
-        console.log("|   ,'.   ||  `---.    |  |\\  \\ |  `---.    |  | `   |'  '-'  '   |  |       |  |  |  ||  ||  |\\  \\ |  ||  | `   |'  '--'  |`--'  ");
-        console.log("'--'   '--'`------'    `--' '--'`------'    `--'  `--' `-----'    `--'       `--'  `--'`--'`--' '--'`--'`--'  `--' `------' .--.  ");
-        console.log("                                                                                                                            '--'  ");
-        console.log("But everone else gets to 'hide' job adverts in their source code, so this is what it might look like if we were desperate enough");
-        console.log("to hire anyone who's figured out how to press Ctrl-Shift-I* on their keybord.  That said, the ascii font we're using is awful - if");
-        console.log("you want to do some pro-bono work finding a better one, shoot us an email!");
-        console.log('');
-        console.log('* Not guaranteed to be a universal shortcut.');
-      </script>
+      <script src="{{base_url}}/static/js/libVoting.js"></script>
+      <script>{% include 'static/js/comedy_logger.js' %}</script>
     {% endblock %}
   </body>
 

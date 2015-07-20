@@ -13,7 +13,9 @@ class BaseModel(peewee.Model):
 class System(BaseModel):
     name = peewee.CharField()
     bite = peewee.TextField()
+    bite_md = peewee.TextField()
     data = peewee.TextField()
+    data_md = peewee.TextField()
 
 
 class Link(BaseModel):
@@ -30,14 +32,14 @@ class Question(BaseModel):
 class Answer(BaseModel):
     question = peewee.ForeignKeyField(Question, related_name='answers')
     text = peewee.CharField()
-    systems = ManyToManyField(System)
+    systems = ManyToManyField(System, related_name='answers')
 
 AnswerSystem = Answer.systems.get_through_model()
 
 
 class Response(BaseModel):
     arbitrary = peewee.BooleanField()
-    answers = ManyToManyField(Answer)
+    answers = ManyToManyField(Answer, related_name='responses')
 
 ResponseAnswer = Response.answers.get_through_model()
 
