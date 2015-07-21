@@ -1,4 +1,5 @@
 import contextlib
+import cherrypy
 
 from . import models
 
@@ -6,7 +7,7 @@ from . import models
 class DatabaseTool(cherrypy.Tool):
 
     def __init__(self):
-        super().__init__(self, 'before_handler', self.load_db)
+        super().__init__('before_handler', self.load_db)
 
     def _setup(self):
         super()._setup()

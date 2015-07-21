@@ -8,7 +8,7 @@ import sass
 import peewee
 import jinja2
 
-from .. import utils, models
+from .. import utils, models, quiz
 from .base import BaseComponent, Static
 
 from . import admin
@@ -20,31 +20,31 @@ class Quiz(BaseComponent):
         super().__init__(*args, **kwargs)
         self.hasher = hasher
 
+    @cherrypy.tools.database_connect()
     def GET(self):
-        with self.db:
-            questions = peewee.prefetch(models.Question.select(), models.Answer.select())
-            return self.template('site/questions.html', questions=questions)
+        questions = peewee.prefetch(models.Question.select(), models.Answer.select())
+        return self.template('site/questions.html', questions=questions)
 
+    @cherrypy.tools.database_connect()
     def POST(self, **kwargs):
-        with self.db:
-            response = models.Response.create(arbitrary=False)
-            for question_id, answer_id in kwargs.items():
-                try:
-                    question_id = int(question_id)
-                    answer_id = int(question_id)
-                except ValueError:
-                    continue
+        response = models.Response.create(arbitrary=True)
+        for question_id, answer_id in kwargs.items():
+            try:
+                question_id = int(question_id)
+                answer_id = int(answer_id)
+            except ValueError:
+                continue
 
-                try:
-                    answer = models.Answer.get(id=answer_id)
-                except models.Answer.DoesNotExist:
-                    continue
+            try:
+                answer = models.Answer.get(id=answer_id)
+            except models.Answer.DoesNotExist:
+                continue
 
-                if answer.question.id != question_id:
-                    continue
+            if answer.question.id != question_id:
+                continue
 
-                response.answers.add(answer)
-            response.save()
+            response.answers.add(answer)
+        response.save()
 
         url = '/results/' + self.hasher.encode(response.id)
         raise cherrypy.HTTPRedirect(url)
@@ -56,18 +56,21 @@ class Results(BaseComponent):
         super().__init__(*args, **kwargs)
         self.hasher = hasher
 
+    @cherrypy.tools.database_connect()
     def GET(self, hash_id):
         try:
             (response_id,) = self.hasher.decode(hash_id)
-        except ValueError:
+            response = models.Response.get(id=response_id)
+        except (ValueError, models.Response.DoesNotExist):
             raise cherrypy.NotFound()
 
-        response = models.Response.get(id=response_id)
-        return self.template('site/results.html', response=response)
+        results = quiz.Quiz(response).calculate()
+        return self.template('site/results.html', results=results)
 
 
 class Systems(BaseComponent):
 
+    @cherrypy.tools.database_connect()
     def GET(self, sys_id=None):
         if sys_id is None:
             systems = models.System.select().order_by(peewee.fn.Random())

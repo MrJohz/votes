@@ -17,6 +17,9 @@ class System(BaseModel):
     data = peewee.TextField()
     data_md = peewee.TextField()
 
+    def __hash__(self):
+        return hash(self.id)
+
 
 class Link(BaseModel):
     system = peewee.ForeignKeyField(System, related_name='links')

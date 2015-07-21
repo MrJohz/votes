@@ -1,58 +1,62 @@
-from collections import Counter
-from . import models
+from fractions import Fraction
+from operator import itemgetter
+from collections import Counter, namedtuple
 
-PERFECT = 'perfect'
-BEST = 'best'
+fraction_sort_key = lambda x: x[1].fraction
 
-def determine(results):
-    if not results:
-        raise ValueError("Need at least one result to use")
+class Score(object):
 
-    system_votes = Counter()
-    system_opportunities = Counter()
-    for question_id, answer_id in results.items():
-        if answer_id == 'ignore':
-            continue
+    def __init__(self, numerator, denominator):
+        self.numerator = numerator
+        self.denominator = denominator
+        self.fraction = Fraction(numerator, denominator)
 
-        try:
-            question = models.Question.get(id=question_id)
-        except models.Question.DoesNotExist:
-            continue
+    def __str__(self):
+        return str(self.numerator) + '/' + str(self.denominator)
 
-        try:
-            answer = question.answers.where(id=answer_id).get()
-        except models.Answer.DoesNotExist:
-            continue
+class Quiz(object):
 
-        for sys in answer.systems:
-            system_votes[sys.id] += 1
+    def __init__(self, response):
+        self.response = response
+        self.systems = Counter()
+        self.potential = Counter()
+        self.system_score = {}
+        self.system_order = []
 
-        for answer in answers.values():
-            for sys in answer['systems']:
-                system_opportunities[sys] += 1
+    def calculate(self):
+        for answer in self.response.answers:
+            for system in answer.systems:
+                self.systems[system] += 1
+            for potential_answer in answer.question.answers:
+                for system in potential_answer.systems:
+                    self.potential[system] += 1
 
-    votes = []
-    for sys in data['systems']:
-        if system_opportunities[sys] > 0:
-            votes.append((system_votes[sys] / system_opportunities[sys], sys))
-    votes.sort()
+        self.system_score = { i: Score(j, self.potential[i]) for i, j in self.systems.items()}
 
-    if not votes:
-        raise ValueError("No votes counted")
+        sorted_systems = sorted(self.system_score.items(), key=fraction_sort_key, reverse=True)
+        self.system_order = [i for i, j in sorted_systems]
 
-    perfect = []
-    best = []
-    for vote in votes:
-        if vote[0] == 1:
-            perfect.append(vote)
-        elif perfect:
-            break
-        elif not best or vote[0] >= best[0][0]:
-            best.append(vote)
+        return self
+
+    def winners(self):
+        top = self[0]
+        winners = []
+        for i in self:
+            if i[1].fraction == top[1].fraction:
+                winners.append(i[0])
+            else:
+                break
+
+        return winners
+
+
+    def __getitem__(self, key):
+        if isinstance(key, int):
+            system = self.system_order[key]
+            return (system, self.system_score[system])
         else:
-            break
+            return (key, self.system_score[key])
 
-    if perfect:
-        return PERFECT, [i[1] for i in perfect], votes
-    else:
-        return BEST, [i[1] for i in best], votes
+    def __iter__(self):
+        for system in self.system_order:
+            yield (system, self.system_score[system])
