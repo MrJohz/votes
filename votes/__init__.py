@@ -11,6 +11,7 @@ from webassets.ext.jinja2 import AssetsExtension
 
 from . import models as m
 from . import utils, assets
+from .markdown_renderer import DewidowRenderer
 
 conf_default = object()
 
@@ -23,7 +24,7 @@ class VoteApplication(object):
 
         m.database.init(self.conf('database', 'file'))
 
-        self.markdown = mistune.Markdown()
+        self.markdown = mistune.Markdown(renderer=DewidowRenderer())
 
         self.hasher = hashids.Hashids(
             salt=self.conf('hashids', 'salt', ''),
