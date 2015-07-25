@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>New System</h1>
+
+  <div class="card-container">
+    <div class="card">
+      <div class="card-boxed">
+        <form method="POST">
+          <h2>
+            Question:
+            <input type="text" placeholder="...?"
+                   name="text" {% if question %}value="{{question.text}}"{% endif %}/>
+          </h2>
+
+          <h3>Description</h3>
+          <textarea name="desc">{% if question -%}
+            {{question.description}}
+          {%- endif %}</textarea>
+
+          <h3>Answers</h3>
+          <p id="answers-paragraph">
+
+            {% macro answer_template(answer=None) %}
+              <div>
+                <div>
+                  Answer text:
+                    <input type="text" name="answer-text"
+                           {% if answer %}value="{{answer.text}}"{% endif %}/>
+                </div>
+                <div>
+                  Systems:
+                    <input type="hidden" name="answer-systems">
+                </div>
+              </div>
+            {% endmacro %}
+
+            <ul>
+            {% if question %}
+              {% for answer in question.answers %}
+                <li>{{ answer_template(answer) }}</li>
+              {% endfor %}
+            {% endif %}
+              <li>{{ answer_template(None) }}</li>
+            </ul>
+            <a href="javascript:void(0)" onclick="newLink()">New Link</a>
+          </p>
+
+          <input type="submit" />
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  {{super()}}
+  {% assets 'js.admin' %}<script src="{{base_url}}/{{ASSETS_URL}}"></script>{% endassets %}
+{% endblock %}

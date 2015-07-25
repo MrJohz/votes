@@ -28,6 +28,7 @@ class Quiz(BaseComponent):
     @cherrypy.tools.database_connect()
     def POST(self, **kwargs):
         response = models.Response.create(arbitrary=True)
+        added = []
         for question_id, answer_id in kwargs.items():
             try:
                 question_id = int(question_id)
@@ -43,7 +44,11 @@ class Quiz(BaseComponent):
             if answer.question.id != question_id:
                 continue
 
-            response.answers.add(answer)
+            added.append(answer)
+
+        if len(added) == 0:
+            raise cherrypy.HTTPRedirect('/systems')
+        response.answers.add(added)
         response.save()
 
         url = '/results/' + self.hasher.encode(response.id)
@@ -87,40 +92,6 @@ class Systems(BaseComponent):
 class Assets(BaseComponent):
 
     @cherrypy.tools.response_headers(headers=[('Content-Type', 'application/javascript')])
-    def GET(self, kind, asset):
-        asset = os.path.basename(asset)
-
-        if kind == 'js' and os.path.splitext(asset)[1] == '.js':
-            return self.get_javascript(asset)
-        elif kind == 'css' and os.path.splitext(asset)[1] == '.css':
-            return self.get_css(asset)
-        else:
-            raise cherrypy.NotFound()
-
-    def get_javascript(self, asset):
-        try:
-            return self.template('static/js/' + asset).encode('utf-8')
-        except jinja2.TemplateNotFound:
-            raise cherrypy.NotFound()
-
-    def get_css(self, asset):
-        directory = self.app.conf('static', 'css_dir')
-        css_path = os.path.join(directory, asset)
-
-        if self.app.conf('static', 'on_the_fly_compile', True):
-            scss_dir = self.app.conf('static', 'css_source_dir')
-            scss_asset = os.path.splitext(asset)[0] + '.scss'
-            scss_path = os.path.join(scss_dir, scss_asset)
-            if not os.path.exists(scss_path):
-                return cherrypy.lib.static.serve_file(css_path)
-            try:
-                if ((not os.path.exists(css_path)) or os.stat(scss_path).st_mtime > os.stat(css_path).st_mtime):
-                    css_source = sass.compile(filename=scss_path)
-                    os.makedirs(directory, exist_ok=True)
-                    with open(css_path, mode='w') as f:
-                        f.write(css_source)
-            except:
-                msg = 'Failed attempt to compile {src} to {dest}'
-                cherrypy.log(msg.format(src=scss_path, dest=css_path), traceback=True)
-
-        return cherrypy.lib.static.serve_file(css_path)
+    def GET(self, asset):
+        return cherrypy.lib.static.serve_file(
+            os.path.join(self.app.conf('static', 'gen_dir'), asset))

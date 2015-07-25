@@ -62,5 +62,5 @@
 
 {% block scripts %}
   {{super()}}
-  <script>{% include 'static/js/modify_links.js' %}</script>
+  {% assets 'js.admin' %}<script src="{{base_url}}/{{ASSETS_URL}}"></script>{% endassets %}
 {% endblock %}

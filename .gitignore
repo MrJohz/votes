@@ -4,3 +4,4 @@ votes-private.conf
 data/votes.db
 static/css
 votes.conf
+static/generated

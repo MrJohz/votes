@@ -1,9 +1,13 @@
+import string
 from collections import OrderedDict
 from functools import lru_cache
 
 import jinja2
 import mistune
 import cherrypy
+import hashids
+import webassets
+from webassets.ext.jinja2 import AssetsExtension
 
 from . import models as m
 from . import utils
@@ -15,19 +19,34 @@ class VoteApplication(object):
 
     def __init__(self, config):
         self._config = config
+        self.PRODUCTION = self.conf('general', 'production', False)
 
         m.database.init(self.conf('database', 'file'))
 
         self.markdown = mistune.Markdown()
 
+        self.hasher = hashids.Hashids(
+            salt=self.conf('hashids', 'salt', ''),
+            alphabet=self.conf('hashids', 'alphabet', string.ascii_lowercase + string.digits),
+            min_length=self.conf('hashids', 'length', 5))
+
+        self.assets_env = webassets.Environment(self.conf('static', 'gen_dir'), 'static',
+            debug=self.conf('static', 'debug', (not self.PRODUCTION)),
+            auto_build=self.conf('static', 'auto_build', (not self.PRODUCTION)))
+        self.assets_env.append_path(self.conf('static', 'js_dir'), 'static/js')
+        self.assets_env.append_path(self.conf('static', 'css_dir'), 'static/css')
+        self._install_assets(self.assets_env)
+
         self.template_env = jinja2.Environment(
-            loader=jinja2.FileSystemLoader(self.conf('templating', 'directory')))
+            loader=jinja2.FileSystemLoader(self.conf('templating', 'directory')),
+            extensions=[AssetsExtension])
         self.template_env.globals.update(
             site_name='Searching For The Perfect System',
             base_url = self.conf('general', 'base_url'))
         self.template_env.filters.update({
             'dewidow': utils.dewidow
             })
+        self.template_env.assets_environment = self.assets_env
 
     def bind_routes(self, routes):
         for url, component_factory in routes.items():
@@ -41,6 +60,16 @@ class VoteApplication(object):
                 return default
 
         return eval(self._config[section][key])
+
+    def _install_assets(self, env):
+        js_common = webassets.Bundle('common/libVoting.js')
+        js_admin = webassets.Bundle('admin/modify_links.js', 'admin/modify_answers.js')
+        env.register('js.admin', js_common, js_admin,
+                     filters='closure_js', output='admin-%(version)s.js')
+
+        css_common = webassets.Bundle('common/main.scss')
+        env.register('css.main', css_common,
+                     filters='pyscss,cssmin', output='main-%(version)s.css')
 
     def drop_tables(self):
         m.database.drop_tables(m.tables, safe=True)

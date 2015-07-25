@@ -7,7 +7,8 @@
     + About page (need text, anything at all)
     + Footer (need text)
     + Individual systems (need more detail)
-- System about page
-- Better algorithm (perhaps include checkbox for emphasising importance?)
+- Better algorithm (perhaps include checkbox for emphasising importance?) (need to rewrite questions first)
 - Facebook OG tags for sharing
 - Share functionality
+- "static" object for rendering static assets - accessible via templates, allows configuration there
+- mistune - dewidow paragraphs and list items via renderer

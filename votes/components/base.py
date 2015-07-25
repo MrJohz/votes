@@ -4,6 +4,21 @@ import cherrypy
 from . import models
 
 
+def parse_params(resource_id, action):
+    if resource_id is None:
+        resource_id = 'get'
+    resource_id, action = (i.lower() for i in (resource_id, action))
+    if resource_id in ('get', 'post'):
+        return (None, resource_id)
+
+    try:
+        resource_id = int(resource_id)
+    except ValueError:
+        raise cherrypy.NotFound()
+
+    return (resource_id, action)
+
+
 class DatabaseTool(cherrypy.Tool):
 
     def __init__(self):
@@ -67,6 +82,54 @@ class BaseComponent(object):
     @classmethod
     def factory(cls, **kwargs):
         return ComponentFactory(cls, **kwargs)
+
+
+class AuthenticatedComponent(BaseComponent):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._cp_config = {
+            'tools.auth_digest.on': True,
+            'tools.auth_digest.realm': 'admin',
+            'tools.auth_digest.get_ha1': self._get_ha1(),
+            'tools.auth_digest.key': self.app.conf('admin', 'auth_key')
+        }
+
+    def _get_ha1(self):
+        username = self.app.conf('admin', 'username')
+        password = self.app.conf('admin', 'password')
+        return cherrypy.lib.auth_digest.get_ha1_dict_plain({username: password})
+
+
+class RestfulComponent(BaseComponent):
+
+    def GET(self, resource_id=None, action='get'):
+        resource_id, action = parse_params(resource_id, action)
+
+        if (resource_id, action) == (None, 'get'):
+            return self.get()
+        elif (resource_id, action) == (None, 'post'):
+            return self.post()
+        elif resource_id is not None and action == 'put':
+            return self.put(resource_id)
+        elif resource_id is not None and action == 'delete':
+            return self.delete(resource_id)
+        else:
+            raise cherrypy.NotFound()
+
+    def POST(self, resource_id=None, action='get', **form):
+        resource_id, action = parse_params(resource_id, action)
+
+        if (resource_id, action) == (None, 'get'):
+            raise cherrypy.HTTPError(405, 'Method not implemented')
+        elif (resource_id, action) == (None, 'post'):
+            return self.do_post(form)
+        elif resource_id is not None and action == 'put':
+            return self.do_put(resource_id, form)
+        elif resource_id is not None and action == 'delete':
+            return self.do_delete(resource_id, form)
+        else:
+            raise cherrypy.NotFound()
 
 
 class Static(BaseComponent):

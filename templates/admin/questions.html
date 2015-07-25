@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Question</h1>
+
+  <div class="card-container">
+    <div class="card">
+      <div class="card-boxed">
+        <h2><a href="{{base_url}}/admin/questions/post">Create a new question</a></h2>
+      </div>
+    </div>
+    {% for question in questions %}
+      <div class="card">
+        <div class="card-boxed">
+          <h2>
+            <span class="icons">
+              <a href="{{base_url}}/admin/questions/{{question.id}}/put" class="shadow fa fa-pencil"></a>
+              <a href="{{base_url}}/admin/questions/{{question.id}}/delete" class="shadow fa fa-close"></a>
+            </span>
+            {{question.text}}
+          </h2>
+
+          <h3>Detail</h3>
+          <p>{{question.description}}</p>
+
+          <h3>Answers</h3>
+          <ul>
+            {% for answer in question.answers %}
+              <li>
+                {{answer.text}}
+                <ul>
+                  {% for system in answer.systems %}
+                    <li><a href="{{base_url}}/systems/{{system.id}}">{{system.name}}</a></li>
+                  {% endfor %}
+                </ul>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}

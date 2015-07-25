@@ -4,9 +4,9 @@
   <head>
     {% block head %}
       <title>{% block title %}{{site_name}}{% endblock %}</title>
-      <link href='http://fonts.googleapis.com/css?family=Cabin:400,600|Ubuntu:700|Droid+Serif' rel='stylesheet' type='text/css'>
+      <link rel='stylesheet' href='//fonts.googleapis.com/css?family=Cabin:400,600|Ubuntu:700|Droid+Serif'>
       <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-      <link rel="stylesheet" type="text/css" href="{{base_url}}/static/css/main.css">
+      {% assets 'css.main' %}<link rel="stylesheet" href="{{base_url}}/{{ASSET_URL}}">{% endassets %}
     {% endblock %}
   </head>
 
@@ -41,7 +41,6 @@
     </footer>
 
     {% block scripts %}
-      <script src="{{base_url}}/static/js/libVoting.js"></script>
       <script>{% include 'static/js/comedy_logger.js' %}</script>
     {% endblock %}
   </body>

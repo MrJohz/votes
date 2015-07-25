@@ -1,9 +1,7 @@
 from configparser import ConfigParser
 import sqlite3
-import string
 
 import cherrypy
-import hashids
 
 from votes import VoteApplication, components, utils
 
@@ -12,16 +10,11 @@ config.read('votes.conf')
 
 app = VoteApplication(config=config)
 
-hasher = hashids.Hashids(
-    salt=app.conf('hashids', 'salt', ''),
-    alphabet=app.conf('hashids', 'alphabet', string.ascii_lowercase + string.digits),
-    min_length=app.conf('hashids', 'length', 5))
-
 app.bind_routes({
     'index': components.Static.factory(page='site/index.html'),
     'about': components.Static.factory(page='site/about.html'),
-    'quiz': components.Quiz.factory(hasher=hasher),
-    'results': components.Results.factory(hasher=hasher),
+    'quiz': components.Quiz.factory(hasher=app.hasher),
+    'results': components.Results.factory(hasher=app.hasher),
     'systems': components.Systems.factory(),
     'static': components.Assets.factory(),
     'admin': components.admin.AdminInterface.factory()})
