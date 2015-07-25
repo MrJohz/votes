@@ -10,11 +10,11 @@
           <h2>
             Question:
             <input type="text" placeholder="...?"
-                   name="text" {% if question %}value="{{question.text}}"{% endif %}/>
+                   name="text" {% if question is defined %}value="{{question.text}}"{% endif %}/>
           </h2>
 
           <h3>Description</h3>
-          <textarea name="desc">{% if question -%}
+          <textarea name="desc">{% if question is defined -%}
             {{question.description}}
           {%- endif %}</textarea>
 
@@ -36,7 +36,7 @@
             {% endmacro %}
 
             <ul>
-            {% if question %}
+            {% if question is defined %}
               {% for answer in question.answers %}
                 <li>{{ answer_template(answer) }}</li>
               {% endfor %}
@@ -55,5 +55,5 @@
 
 {% block scripts %}
   {{super()}}
-  {% assets 'js.admin' %}<script src="{{base_url}}/{{ASSETS_URL}}"></script>{% endassets %}
+  {% assets 'js.admin' %}<script src="{{base_url}}/{{ASSET_URL}}"></script>{% endassets %}
 {% endblock %}

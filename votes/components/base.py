@@ -32,7 +32,10 @@ class DatabaseTool(cherrypy.Tool):
         models.database.connect()
 
     def end_db(self):
-        models.database.close()
+        try:
+            models.database.close()
+        except:
+            pass
 
 cherrypy.tools.database_connect = DatabaseTool()
 

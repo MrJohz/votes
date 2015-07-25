@@ -10,7 +10,7 @@ import webassets
 from webassets.ext.jinja2 import AssetsExtension
 
 from . import models as m
-from . import utils
+from . import utils, assets
 
 conf_default = object()
 
@@ -35,14 +35,16 @@ class VoteApplication(object):
             auto_build=self.conf('static', 'auto_build', (not self.PRODUCTION)))
         self.assets_env.append_path(self.conf('static', 'js_dir'), 'static/js')
         self.assets_env.append_path(self.conf('static', 'css_dir'), 'static/css')
+        self.assets_env.config['CLOSURE_COMPRESSOR_OPTIMIZATION'] = 'ADVANCED_OPTIMIZATIONS'
+        self.assets_env.config['PYSCSS_DEBUG_INFO'] = False
         self._install_assets(self.assets_env)
 
         self.template_env = jinja2.Environment(
             loader=jinja2.FileSystemLoader(self.conf('templating', 'directory')),
-            extensions=[AssetsExtension])
+            extensions=[AssetsExtension], undefined=jinja2.StrictUndefined)
         self.template_env.globals.update(
             site_name='Searching For The Perfect System',
-            base_url = self.conf('general', 'base_url'))
+            base_url=self.conf('general', 'base_url'))
         self.template_env.filters.update({
             'dewidow': utils.dewidow
             })
@@ -69,7 +71,7 @@ class VoteApplication(object):
 
         css_common = webassets.Bundle('common/main.scss')
         env.register('css.main', css_common,
-                     filters='pyscss,cssmin', output='main-%(version)s.css')
+                     filters=['pyscss', 'compressor'], output='main-%(version)s.css')
 
     def drop_tables(self):
         m.database.drop_tables(m.tables, safe=True)

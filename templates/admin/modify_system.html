@@ -10,14 +10,14 @@
           <h2>
             Name:
             <input type="text" placeholder="System Name"
-                   name="name" {% if system %}value="{{system.name}}"{% endif %}/>
+                   name="name" {% if system is defined %}value="{{system.name}}"{% endif %}/>
           </h2>
 
           <h3>Bite</h3>
-          <textarea name="bite">{% if system %}{{system.bite_md}}{% endif %}</textarea>
+          <textarea name="bite">{% if system is defined %}{{system.bite_md}}{% endif %}</textarea>
 
           <h3>Description</h3>
-          <textarea name="desc">{% if system %}{{system.data_md}}{% endif %}</textarea>
+          <textarea name="desc">{% if system is defined %}{{system.data_md}}{% endif %}</textarea>
 
           <h3>Links</h3>
           <p id="links-paragraph">
@@ -31,7 +31,7 @@
               </span>
             </script>
 
-            {% if system %}
+            {% if system is defined %}
               {% for link in system.links %}
                 <span>
                   <input type="text" name="l-name" value="{{link.name}}" />
@@ -62,5 +62,5 @@
 
 {% block scripts %}
   {{super()}}
-  {% assets 'js.admin' %}<script src="{{base_url}}/{{ASSETS_URL}}"></script>{% endassets %}
+  {% assets 'js.admin' %}<script src="{{base_url}}/{{ASSET_URL}}"></script>{% endassets %}
 {% endblock %}

@@ -15,4 +15,4 @@
       return this.toElement(document.getElementById(id).innerHTML);
     }
   }
-})()
+})();
