@@ -91,7 +91,10 @@ class Systems(BaseComponent):
 
 class Assets(BaseComponent):
 
-    @cherrypy.tools.response_headers(headers=[('Content-Type', 'application/javascript')])
-    def GET(self, asset):
-        return cherrypy.lib.static.serve_file(
-            os.path.join(self.app.conf('static', 'gen_dir'), asset))
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self._cp_config = {
+            'tools.staticdir.on': True,
+            'tools.staticdir.dir': self.app.conf('static', 'base_dir')
+        }

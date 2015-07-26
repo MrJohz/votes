@@ -92,11 +92,17 @@ class QuestionInterface(base.RestfulComponent):
         return self.template('admin/questions.html', questions=models.Question.select())
 
     def post(self):
-        return self.template('admin/modify_question.html')
+        return self.template('admin/modify_question.html', systems=models.System.select())
 
     def put(self, question_id):
         return self.template('admin/modify_question.html',
+                             systems=models.System.select(),
                              question=get_model_instance(question_id, models.Question))
+
+    def do_put(self, question_id, form):
+        from pprint import pprint
+        pprint(form)
+        return ''
 
     def delete(self, question_id):
         return self.template('admin/delete_question.html',

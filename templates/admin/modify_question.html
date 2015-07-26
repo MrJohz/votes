@@ -18,34 +18,50 @@
             {{question.description}}
           {%- endif %}</textarea>
 
+          {% macro answer_template(answer=None) %}
+            <div data-id="{{answer.id if answer else 'new0'}}">
+              <input type="text"
+                {% if answer %}
+                  name="answer-{{answer.id}}-text"
+                  value="{{answer.text}}"
+                {% else %}
+                  name="answer-new0-text"
+                {% endif %}>
+              <a href="javascript:void(0)" onclick="deleteAnswer(this.parentElement)"
+                class="shadow fa fa-times"></a>
+              {% for system in systems %}
+                <div>
+                  <input type="checkbox" value="{{system.id}}"
+                    {% if answer and system in answer.systems -%}checked{%- endif %}
+                    {% if answer -%}
+                      id="{{answer.id}}-{{system.id}}" name="answer-{{answer.id}}-systems"
+                    {%- else -%}
+                      id="new0-{{system.id}}" name="answer-new0-systems"
+                    {%- endif %}>
+                  <label
+                    {% if answer -%}
+                      for="{{answer.id}}-{{system.id}}"
+                    {%- else -%}
+                      for="new0-{{system.id}}"
+                    {%- endif %}>
+                    {{system.name}}
+                  </label>
+                </div>
+              {% endfor %}
+            </div>
+          {% endmacro %}
+          <script type="text/template" id="answers-template">{{ answer_template(None) }}</script>
+
           <h3>Answers</h3>
-          <p id="answers-paragraph">
-
-            {% macro answer_template(answer=None) %}
-              <div>
-                <div>
-                  Answer text:
-                    <input type="text" name="answer-text"
-                           {% if answer %}value="{{answer.text}}"{% endif %}/>
-                </div>
-                <div>
-                  Systems:
-                    <input type="hidden" name="answer-systems">
-                </div>
-              </div>
-            {% endmacro %}
-
-            <ul>
+          <div id="answers-block">
             {% if question is defined %}
               {% for answer in question.answers %}
-                <li>{{ answer_template(answer) }}</li>
+                {{ answer_template(answer) }}
               {% endfor %}
             {% endif %}
-              <li>{{ answer_template(None) }}</li>
-            </ul>
-            <a href="javascript:void(0)" onclick="newLink()">New Link</a>
-          </p>
-
+            {{ answer_template(None) }}
+            <a href="javascript:void(0)" onclick="newAnswer()"><br />New Answer</a>
+          </div>
           <input type="submit" />
         </form>
       </div>

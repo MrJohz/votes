@@ -1,0 +1,316 @@
+@import "theme";
+@import "utils";
+
+html, body {
+  width: 100%;
+  font-family: 'Cabin', sans-serif;
+  background-color: $background-color;
+  color: $font-color;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+#site-header {
+  text-align: center;
+
+  header {
+    font-size: 1.5em;
+    padding: 0.5em;
+    border-bottom: 0.5em solid $font-color;
+    text-align: center;
+    font-family: 'Ubuntu', sans-serif;
+
+    #header-link {
+      color: $font-color;
+      text-decoration: none;
+    }
+
+    h1 {
+      margin: 0.5em 0 0.2em 0;
+    }
+
+    & + nav {
+      display: inline-block;
+      border-bottom: 0.5em solid $font-color;
+      margin: 0 auto 1.4em auto;
+
+      ul {
+        margin: 0.18em 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      li {
+        padding: 0.5em 1em;
+        display: inline-block;
+      }
+
+      a {
+        color: $font-color;
+        text-decoration: none;
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+content {
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 400;
+    margin-bottom: 0.4em;
+  }
+
+  h1 {
+    margin-top: 0.8em;
+    padding: 0.3em 0;
+    border-bottom: 0.1em solid $font-color;
+  }
+
+  a {
+    position: relative;
+    box-sizing: border-box;
+    color: $font-color;
+    text-decoration: none;
+  }
+
+  a:not(.shadow) {
+    font-weight: 900;
+    &:after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      left: 0;
+      bottom: 0;
+      height: 2px;
+      background-color: $font-color;
+    }
+
+    &:hover {
+      &:after {
+        height: 3px;
+      }
+    }
+  }
+
+  textarea, input {
+    box-sizing: border-box;
+    @include shadow($height: 1, $magic: false);
+    padding: 0.2em;
+    border: 1px solid $font-color;
+    background-color: $background-color;
+    color: $font-color;
+    height: 2em;
+  }
+
+  input {
+    font-family: 'Cabin', sans-serif;
+
+    &[type="submit"] {
+      @include shadow($height: 1);
+      height: inherit;
+      cursor: pointer;
+      margin: 0.7em auto;
+      padding: 0.5em;
+      border-radius: 1em;
+    }
+
+    &[type="checkbox"] {
+      height: inherit;
+    }
+  }
+
+  textarea {
+    width: 100%;
+    height: 8em;
+  }
+
+  input:invalid {
+    border-color: $error-color;
+    border-width: 2px;
+    background-color: lighten($error-color, 29);
+  }
+
+  display: block;
+  width: 85%;
+  @include breakpoint(big) {
+    width: 70%;
+  };
+  margin: 1em auto;
+
+  &::after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+}
+
+#page-wrap { // magic for sticky footer
+  min-height: 100%;
+  margin-bottom: -1.5em;
+  &::after {
+    content: '';
+    display: block;
+  }
+}
+
+.clearfix {
+  clear: both;
+}
+
+footer, #page-wrap::after {
+  height: 1.5em;
+}
+
+footer {
+  display: block;
+  padding: 0.8em 0 0.5em 0;
+  border-top: 0.4em solid $font-color;
+  text-align: center;
+  font-family: 'Ubuntu', sans-serif;
+}
+
+// This should only deal with the frontpage 'intro' panel
+#intro-page {
+  min-height: 100vh;
+  border-bottom: 0.75em solid $font-color;
+}
+
+// This should only deal with the question page & associated form.
+#questions {
+  .question-help {
+    display: block;
+    font-size: 0.8em;
+    width: 90%;
+    margin: 0 auto;
+    color: lighten($font-color, 30);
+    padding-bottom: 0.3em;
+    font-family: 'Droid Serif', serif;
+    text-align: justify;
+    @include breakpoint(big, mbig) {
+      width: 94%;
+    }
+  }
+
+  ul {
+    margin: 0.7em 3em 1.8em 3em;
+    padding: 0;
+    list-style-type: none;
+
+    li {
+      position: relative;
+      padding: 0.2em 0;
+
+      input[type="radio"] {
+        display: none;
+      }
+
+      input[type="radio"] + label {
+        cursor: pointer;
+        &::before {
+          @include shadow($height: 1, $magic: false);
+          box-sizing: border-box;
+          line-height: 0.4em;
+          text-indent: 0.1em;
+          font-size: 2em;
+          position: absolute;
+          left: -1em;
+          display: block;
+          content: '';
+          height: 0.6em;
+          width: 0.6em;
+          border: 1px solid $font-color;
+          border-radius: 1em;
+          transition: border-width 0.1s;
+        }
+        &:hover::before {
+          @include shadow($height: 1.5, $magic: false);
+        }
+      }
+
+      input[type="radio"]:checked + label::before {
+        border-width: 0.2em;
+      }
+    }
+  }
+
+  input[type="submit"] {
+    display: block;
+    height: inherit;
+    font-size: 1.5em;
+    margin: 0 auto;
+    width: 80%;
+  }
+}
+
+// This displays cards containing the details of the current system
+.card {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+
+  padding: 0.8em;
+
+  &.card-float-left, &.card-float-right {
+    @include breakpoint(big, mbig) {
+      width: 50%;
+      .card-boxed {
+        height: 19em;
+      }
+    }
+  }
+
+  &.card-float-left {
+    float: left;
+  }
+
+  &.card-float-right {
+    float: right;
+  }
+
+  .card-boxed {
+    position: relative;
+    border: 1px solid $font-color;
+    padding: 0 1em 3.5em 1em;
+    @include breakpoint(big, mbig) {
+      padding: 0 2em 1em 2em;
+    }
+
+    h2 {
+      input[type="text"] {
+        font-size: 1em;
+      }
+    }
+
+    input[type="text"] {
+      width: 40%;
+      margin: 0.5em;
+    }
+
+    .read-more {
+      @include shadow($height: 1, $magic: false);
+      position: absolute;
+      bottom: 1em;
+      right: 1em;
+      border: 1px solid $font-color;
+      padding: 0.7em;
+      border-radius: 3em;
+      font-family: 'Ubuntu', sans-serif;
+      color: $font-color;
+      text-decoration: none;
+
+      &:after {
+        display: none;
+      }
+
+      &:hover {
+        @include shadow($height: 1.5, $magic: false);
+        bottom: 1.1em;
+      }
+    }
+
+    ul {
+      padding-left: 1.5em;
+    }
+  }
+}

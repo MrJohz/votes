@@ -28,8 +28,8 @@ def ordered_load(fn, Loader=yaml.Loader, mapper=collections.OrderedDict):
         return yaml.load(stream, OrderedLoader)
 
 
-def dewidow(string):
-    if len(string.split(' ')) > 3:
+def dewidow(string, force=False):
+    if len(string.split(' ')) > 3 or force:
         return "&nbsp;".join(string.rsplit(' ', 1))
     else:
         return string

@@ -31,7 +31,7 @@ class VoteApplication(object):
             alphabet=self.conf('hashids', 'alphabet', string.ascii_lowercase + string.digits),
             min_length=self.conf('hashids', 'length', 5))
 
-        self.assets_env = webassets.Environment(self.conf('static', 'gen_dir'), 'static',
+        self.assets_env = webassets.Environment(self.conf('static', 'gen_dir'), 'static/generated',
             debug=self.conf('static', 'debug', (not self.PRODUCTION)),
             auto_build=self.conf('static', 'auto_build', (not self.PRODUCTION)))
         self.assets_env.append_path(self.conf('static', 'js_dir'), 'static/js')
@@ -70,7 +70,7 @@ class VoteApplication(object):
         env.register('js.admin', js_common, js_admin,
                      filters='closure_js', output='admin-%(version)s.js')
 
-        css_common = webassets.Bundle('common/main.scss')
+        css_common = webassets.Bundle('common/main.scss', output='scssbuild-%(version)s.css')
         env.register('css.main', css_common,
                      filters=['pyscss', 'compressor'], output='main-%(version)s.css')
 

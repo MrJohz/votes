@@ -11,3 +11,4 @@
 - rewrite CSS
     + Accessibility, cross-browser compat
     + Modularise more stuff, perhaps use compass/etc for grid?
+- create_static_files command for cl interface
