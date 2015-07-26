@@ -34,9 +34,9 @@
                   <input type="checkbox" value="{{system.id}}"
                     {% if answer and system in answer.systems -%}checked{%- endif %}
                     {% if answer -%}
-                      id="{{answer.id}}-{{system.id}}" name="answer-{{answer.id}}-systems"
+                      id="{{answer.id}}-{{system.id}}" name="answer-{{answer.id}}-sys"
                     {%- else -%}
-                      id="new0-{{system.id}}" name="answer-new0-systems"
+                      id="new0-{{system.id}}" name="answer-new0-sys"
                     {%- endif %}>
                   <label
                     {% if answer -%}
