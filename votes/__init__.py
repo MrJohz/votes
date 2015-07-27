@@ -1,4 +1,5 @@
 import string
+import json
 from collections import OrderedDict
 from functools import lru_cache
 
@@ -108,3 +109,78 @@ class VoteApplication(object):
                 for system in answer['systems']:
                     ans.systems.add(systems[system]['loaded'])
                 ans.save()
+
+    def dump_models(self, file):
+        systems = []
+        for system in m.System.select():
+            systems.append({
+                'id': system.id,
+                'name': system.name,
+                'bite': system.bite_md,
+                'data': system.data_md
+            })
+
+        questions = []
+        for question in m.Question.select():
+            answers = []
+
+            for answer in question.answers.select():
+                answers.append({
+                    'id': answer.id,
+                    'text': answer.text,
+                    'systems': [sys.id for sys in answer.systems.select()]
+                })
+
+            questions.append({
+                'id': question.id,
+                'text': question.text,
+                'desc': question.description,
+                'answers': answers
+            })
+
+        json.dump({'systems': systems, 'questions': questions},
+            file, sort_keys=True, indent=2)
+
+    def load_models(self, file):
+        data = json.load(file)
+        systems, questions = data['systems'], data['questions']
+
+        with m.database.execution_context():
+            for system_data in systems:
+                try:
+                    system = m.System.get(id=system_data['id'])
+                except m.System.DoesNotExist:
+                    system = m.System(id=system_data['id'])
+
+                system.name = system_data['name']
+                system.bite_md = system_data['bite']
+                system.bite = self.markdown(system.bite_md)
+                system.data_md = system_data['data']
+                system.data = self.markdown(system.data_md)
+                system.save()
+
+            for question_data in questions:
+                try:
+                    question = m.Question.get(id=question_data['id'])
+                except m.Question.DoesNotExist:
+                    question = m.Question(id=question_data['id'])
+
+                question.text = question_data['text']
+                question.description = question_data['desc']
+                question.save()
+
+                for answer_data in question_data['answers']:
+                    try:
+                        answer = m.Answer.get(id=answer_data['id'])
+                    except m.Answer.DoesNotExist:
+                        answer = m.Answer(id=answer_data['id'])
+
+                    answer.text = answer_data['text']
+                    answer.question = question
+                    answer.systems.clear()
+                    answer.save()
+
+                    for system_id in answer_data['systems']:
+                        system = m.System.get(id=system_id)
+                        answer.systems.add(system)
+                    answer.save()

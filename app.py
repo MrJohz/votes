@@ -23,7 +23,15 @@ if __name__ == "__main__":
     import sys
     if len(sys.argv) == 1:
         cherrypy.quickstart(app, '/', 'votes.conf')
-    elif sys.argv[1] == 'setup-database':
+    elif sys.argv[1] == 'initialise-database':
         app.drop_tables()
         app.create_tables()
-        app.insert_data(utils.ordered_load(app.conf('general', 'data_source_file')))
+        app.insert_data(utils.ordered_load(sys.argv[2]))
+    elif sys.argv[1] == 'dump-db':
+        with open(sys.argv[2], mode='w') as file:
+            app.dump_models(file)
+    elif sys.argv[1] == 'load-db':
+        with open(sys.argv[2], mode='r') as file:
+            app.load_models(file)
+    else:
+        print("Unknown argument", sys.argv[1])
