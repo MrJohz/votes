@@ -27,7 +27,7 @@ class Quiz(BaseComponent):
 
     @cherrypy.tools.database_connect()
     def POST(self, **kwargs):
-        response = models.Response.create(arbitrary=True)
+        response = models.Response.create()
         added = []
         for question_id, answer_id in kwargs.items():
             try:

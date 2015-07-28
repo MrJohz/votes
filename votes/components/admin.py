@@ -3,6 +3,7 @@ import cherrypy
 
 from . import base
 from .. import models
+from ..utils import destr
 
 
 def get_model_instance(model_id, model):
@@ -10,15 +11,6 @@ def get_model_instance(model_id, model):
         return model.get(id=model_id)
     except model.DoesNotExist:
         raise cherrypy.NotFound()
-
-
-def destr(strist):
-    """Convert a thing that may be a string or a list into a list of strings"""
-    if strist is None:
-        return []
-    elif isinstance(strist, str):
-        return [strist]
-    return [s for s in strist if s.strip()]
 
 
 class SystemInterface(base.RestfulComponent):
@@ -100,7 +92,7 @@ class QuestionInterface(base.RestfulComponent):
                              question=get_model_instance(question_id, models.Question))
 
     def do_put(self, question_id, form):
-        question=get_model_instance(question_id, models.Question)
+        question = get_model_instance(question_id, models.Question)
         question.text = form.pop('text', question.text)
         question.description = form.pop('desc', question.description)
         question.save()

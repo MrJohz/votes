@@ -1,5 +1,4 @@
 import collections
-import yaml
 
 
 class QuickEnum(object):
@@ -15,25 +14,18 @@ class QuickEnum(object):
             setattr(self, key, val)
 
 
-def ordered_load(fn, Loader=yaml.Loader, mapper=collections.OrderedDict):
-    with open(fn) as stream:
-        class OrderedLoader(Loader):
-            pass
-        def construct_mapping(loader, node):
-            loader.flatten_mapping(node)
-            return mapper(loader.construct_pairs(node))
-        OrderedLoader.add_constructor(
-            yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
-            construct_mapping)
-        return yaml.load(stream, OrderedLoader)
-
-
 def dewidow(string, force=False):
+    string = string.replace("&nbsp;", " ")
     if len(string.split(' ')) > 3 or force:
         return "&nbsp;".join(string.rsplit(' ', 1))
     else:
         return string
 
 
-def double_paragraphs(string):
-    return string.replace('\n', '\n\n')
+def destr(strist):
+    """Convert a thing that may be a string or a list into a list of strings"""
+    if strist is None:
+        return []
+    elif isinstance(strist, str):
+        return [strist]
+    return [s for s in strist if s.strip()]

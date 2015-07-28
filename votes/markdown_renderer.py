@@ -4,6 +4,7 @@ from .utils import dewidow
 class DewidowRenderer(mistune.Renderer):
 
     def block_quote(self, text):
+        print(text)
         return super().block_quote(dewidow(text))
 
     def header(self, text, level, raw=None):

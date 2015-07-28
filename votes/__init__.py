@@ -76,111 +76,17 @@ class VoteApplication(object):
                      filters=['pyscss', 'compressor'], output='main-%(version)s.css')
 
     def drop_tables(self):
-        m.database.drop_tables(m.tables, safe=True)
+        m.drop_tables()
 
     def create_tables(self):
-        m.database.create_tables(m.tables, safe=True)
-
-    def insert_data(self, data):
-
-        systems = data['systems']
-        for sys in systems.values():
-            bite_md = "\n".join("- " + i for i in sys['information'])
-            bite = self.markdown(bite_md)
-
-            text_md = utils.double_paragraphs(sys['description']).strip()
-            text = self.markdown(text_md)
-
-            db_system = m.System.create(name=sys['name'], bite_md=bite_md, bite=bite,
-                                        data_md=text_md, data=text)
-            for link in sys.get('links', []):
-                m.Link.create(system=db_system, name=link['name'],
-                                    link=link['site'])
-
-            sys['loaded'] = db_system
-
-        questions = data['questions']
-        for question in questions.values():
-            db_question = m.Question.create(text=question['text'],
-                                            description=question['explanation'])
-
-            for answer in question['answers'].values():
-                ans = m.Answer.create(question=db_question, text=answer['text'])
-                for system in answer['systems']:
-                    ans.systems.add(systems[system]['loaded'])
-                ans.save()
+        m.create_tables()
 
     def dump_models(self, file):
-        systems = []
-        for system in m.System.select():
-            systems.append({
-                'id': system.id,
-                'name': system.name,
-                'bite': system.bite_md,
-                'data': system.data_md
-            })
-
-        questions = []
-        for question in m.Question.select():
-            answers = []
-
-            for answer in question.answers.select():
-                answers.append({
-                    'id': answer.id,
-                    'text': answer.text,
-                    'systems': [sys.id for sys in answer.systems.select()]
-                })
-
-            questions.append({
-                'id': question.id,
-                'text': question.text,
-                'desc': question.description,
-                'answers': answers
-            })
-
+        systems, questions = m.dump_models()
         json.dump({'systems': systems, 'questions': questions},
             file, sort_keys=True, indent=2)
 
     def load_models(self, file):
         data = json.load(file)
         systems, questions = data['systems'], data['questions']
-
-        with m.database.execution_context():
-            for system_data in systems:
-                try:
-                    system = m.System.get(id=system_data['id'])
-                except m.System.DoesNotExist:
-                    system = m.System(id=system_data['id'])
-
-                system.name = system_data['name']
-                system.bite_md = system_data['bite']
-                system.bite = self.markdown(system.bite_md)
-                system.data_md = system_data['data']
-                system.data = self.markdown(system.data_md)
-                system.save()
-
-            for question_data in questions:
-                try:
-                    question = m.Question.get(id=question_data['id'])
-                except m.Question.DoesNotExist:
-                    question = m.Question(id=question_data['id'])
-
-                question.text = question_data['text']
-                question.description = question_data['desc']
-                question.save()
-
-                for answer_data in question_data['answers']:
-                    try:
-                        answer = m.Answer.get(id=answer_data['id'])
-                    except m.Answer.DoesNotExist:
-                        answer = m.Answer(id=answer_data['id'])
-
-                    answer.text = answer_data['text']
-                    answer.question = question
-                    answer.systems.clear()
-                    answer.save()
-
-                    for system_id in answer_data['systems']:
-                        system = m.System.get(id=system_id)
-                        answer.systems.add(system)
-                    answer.save()
+        m.load_models(systems=systems, questions=questions, markdown=self.markdown)

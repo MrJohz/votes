@@ -26,7 +26,6 @@ if __name__ == "__main__":
     elif sys.argv[1] == 'initialise-database':
         app.drop_tables()
         app.create_tables()
-        app.insert_data(utils.ordered_load(sys.argv[2]))
     elif sys.argv[1] == 'dump-db':
         with open(sys.argv[2], mode='w') as file:
             app.dump_models(file)

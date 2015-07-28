@@ -7,9 +7,9 @@ from . import models
 def parse_params(resource_id, action):
     if resource_id is None:
         resource_id = 'get'
-    resource_id, action = (i.lower() for i in (resource_id, action))
+    resource_id, action = (i if i is None else i.lower() for i in (resource_id, action))
     if resource_id in ('get', 'post'):
-        return (None, resource_id)
+        return (action, resource_id)
 
     try:
         resource_id = int(resource_id)
@@ -79,7 +79,7 @@ class BaseComponent(object):
     @property
     @contextlib.contextmanager
     def db(self):
-        with models.database.execution_context() as ctx:
+        with models.database.execution_context():
             yield
 
     @classmethod
@@ -106,7 +106,7 @@ class AuthenticatedComponent(BaseComponent):
 
 class RestfulComponent(BaseComponent):
 
-    def GET(self, resource_id=None, action='get'):
+    def GET(self, resource_id=None, action=None):
         resource_id, action = parse_params(resource_id, action)
 
         if (resource_id, action) == (None, 'get'):
@@ -120,7 +120,7 @@ class RestfulComponent(BaseComponent):
         else:
             raise cherrypy.NotFound()
 
-    def POST(self, resource_id=None, action='get', **form):
+    def POST(self, resource_id=None, action=None, **form):
         resource_id, action = parse_params(resource_id, action)
 
         if (resource_id, action) == (None, 'get'):
