@@ -3,3 +3,4 @@ __pycache__
 data/votes.db
 votes.conf
 static/generated
+.cache
