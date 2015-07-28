@@ -1,8 +1,10 @@
 from fractions import Fraction
-from operator import itemgetter
-from collections import Counter, namedtuple
+from collections import Counter
 
-fraction_sort_key = lambda x: x[1].fraction
+
+def fraction_sort_key(x):
+    return x[1].fraction
+
 
 class Score(object):
 
@@ -21,6 +23,7 @@ class Score(object):
     def __str__(self):
         return str(self.numerator) + '/' + str(self.denominator)
 
+
 class Quiz(object):
 
     def __init__(self, response):
@@ -38,7 +41,7 @@ class Quiz(object):
                 for system in potential_answer.systems:
                     self.potential[system] += 1
 
-        self.system_score = { i: Score(j, self.potential[i]) for i, j in self.systems.items()}
+        self.system_score = {i: Score(j, self.potential[i]) for i, j in self.systems.items()}
 
         sorted_systems = sorted(self.system_score.items(), key=fraction_sort_key, reverse=True)
         self.system_order = [i for i, j in sorted_systems]
@@ -58,7 +61,6 @@ class Quiz(object):
             return winners
         else:
             return []
-
 
     def __getitem__(self, key):
         if isinstance(key, int):

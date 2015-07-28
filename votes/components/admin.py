@@ -1,4 +1,3 @@
-import contextlib
 import cherrypy
 
 from . import base

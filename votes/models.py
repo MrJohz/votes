@@ -1,14 +1,13 @@
 import peewee
 from playhouse.fields import ManyToManyField
-import datetime
 
 
-## Database definitions ##################################################################
+# Database definitions ###################################################################
 
 database = peewee.SqliteDatabase(None)
 
 
-## Model definitions #####################################################################
+# Model definitions ######################################################################
 
 class BaseModel(peewee.Model):
     class Meta:

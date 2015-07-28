@@ -1,9 +1,6 @@
 from configparser import ConfigParser
-import sqlite3
-
 import cherrypy
-
-from votes import VoteApplication, components, utils
+from votes import VoteApplication, components
 
 config = ConfigParser()
 config.read('votes.conf')

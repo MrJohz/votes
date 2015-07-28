@@ -1,17 +1,15 @@
 import string
 import json
-from collections import OrderedDict
 from functools import lru_cache
 
 import jinja2
 import mistune
-import cherrypy
 import hashids
 import webassets
 from webassets.ext.jinja2 import AssetsExtension
 
 from . import models as m
-from . import utils, assets
+from . import utils, assets  # flake: ignore
 from .markdown_renderer import DewidowRenderer
 
 conf_default = object()
@@ -32,7 +30,10 @@ class VoteApplication(object):
             alphabet=self.conf('hashids', 'alphabet', string.ascii_lowercase + string.digits),
             min_length=self.conf('hashids', 'length', 5))
 
-        self.assets_env = webassets.Environment(self.conf('static', 'gen_dir'), 'static/generated',
+        webassets.filter.register_filter(assets.CSSCompressorFilter)
+
+        self.assets_env = webassets.Environment(
+            self.conf('static', 'gen_dir'), 'static/generated',
             debug=self.conf('static', 'debug', (not self.PRODUCTION)),
             auto_build=self.conf('static', 'auto_build', (not self.PRODUCTION)))
         self.assets_env.append_path(self.conf('static', 'js_dir'), 'static/js')
@@ -48,8 +49,7 @@ class VoteApplication(object):
             site_name='Searching For The Perfect System',
             base_url=self.conf('general', 'base_url'))
         self.template_env.filters.update({
-            'dewidow': utils.dewidow
-            })
+            'dewidow': utils.dewidow})
         self.template_env.assets_environment = self.assets_env
 
     def bind_routes(self, routes):
@@ -83,7 +83,8 @@ class VoteApplication(object):
 
     def dump_models(self, file):
         systems, questions = m.dump_models()
-        json.dump({'systems': systems, 'questions': questions},
+        json.dump(
+            {'systems': systems, 'questions': questions},
             file, sort_keys=True, indent=2)
 
     def load_models(self, file):

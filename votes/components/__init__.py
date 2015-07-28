@@ -1,17 +1,12 @@
-import os
-
-from urllib.parse import urlencode
-from collections import Counter
-
 import cherrypy
-import sass
 import peewee
-import jinja2
 
-from .. import utils, models, quiz
+from .. import models, quiz
 from .base import BaseComponent, Static
 
 from . import admin
+
+__all__ = ['admin', 'Static', 'Quiz', 'Results', 'System', 'Assets']
 
 
 class Quiz(BaseComponent):

@@ -1,6 +1,7 @@
 import mistune
 from .utils import dewidow
 
+
 class DewidowRenderer(mistune.Renderer):
 
     def block_quote(self, text):

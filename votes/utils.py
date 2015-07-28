@@ -1,6 +1,3 @@
-import collections
-
-
 class QuickEnum(object):
     """Quickly create a fairly simple enumeration object
 
