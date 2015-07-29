@@ -9,7 +9,7 @@ import webassets
 from webassets.ext.jinja2 import AssetsExtension
 
 from . import models as m
-from . import utils, assets  # flake: ignore
+from . import utils, assets, components
 from .markdown_renderer import DewidowRenderer
 
 conf_default = object()
@@ -32,12 +32,11 @@ class VoteApplication(object):
 
         webassets.filter.register_filter(assets.CSSCompressorFilter)
 
-        self.assets_env = webassets.Environment(
-            self.conf('static', 'gen_dir'), 'static/generated',
+        self.assets_env = webassets.Environment('static/generated', 'static/generated',
             debug=self.conf('static', 'debug', (not self.PRODUCTION)),
             auto_build=self.conf('static', 'auto_build', (not self.PRODUCTION)))
-        self.assets_env.append_path(self.conf('static', 'js_dir'), 'static/js')
-        self.assets_env.append_path(self.conf('static', 'css_dir'), 'static/css')
+        self.assets_env.append_path('static/js', 'static/js')
+        self.assets_env.append_path('static/css', 'static/css')
         self.assets_env.config['CLOSURE_COMPRESSOR_OPTIMIZATION'] = 'ADVANCED_OPTIMIZATIONS'
         self.assets_env.config['PYSCSS_DEBUG_INFO'] = False
         self._install_assets(self.assets_env)
@@ -81,13 +80,23 @@ class VoteApplication(object):
     def create_tables(self):
         m.create_tables()
 
-    def dump_models(self, file):
+    def dump_models(self):
         systems, questions = m.dump_models()
-        json.dump(
-            {'systems': systems, 'questions': questions},
-            file, sort_keys=True, indent=2)
+        return {'systems': systems, 'questions': questions}
 
-    def load_models(self, file):
-        data = json.load(file)
+    def load_models(self, data):
         systems, questions = data['systems'], data['questions']
         m.load_models(systems=systems, questions=questions, markdown=self.markdown)
+
+
+def create_app(config):
+    app = VoteApplication(config=config)
+    app.bind_routes({
+        'index': components.Static.factory(page='site/index.html'),
+        'about': components.Static.factory(page='site/about.html'),
+        'quiz': components.Quiz.factory(hasher=app.hasher),
+        'results': components.Results.factory(hasher=app.hasher),
+        'systems': components.Systems.factory(),
+        'static': components.Assets.factory(),
+        'admin': components.admin.AdminInterface.factory()})
+    return app

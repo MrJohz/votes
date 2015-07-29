@@ -16,6 +16,3 @@ class DewidowRenderer(mistune.Renderer):
 
     def paragraph(self, text):
         return super().paragraph(dewidow(text))
-
-    def table_cell(self, content, **flags):
-        return super().table_cell(dewidow(content), **flags)

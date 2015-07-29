@@ -1,9 +1,10 @@
+from os import path
+
 import cherrypy
 import peewee
 
 from .. import models, quiz
 from .base import BaseComponent, Static
-
 from . import admin
 
 __all__ = ['admin', 'Static', 'Quiz', 'Results', 'System', 'Assets']
@@ -86,10 +87,12 @@ class Systems(BaseComponent):
 
 class Assets(BaseComponent):
 
+    staticdir = path.join(path.realpath(__file__), 'static')
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self._cp_config = {
             'tools.staticdir.on': True,
-            'tools.staticdir.dir': self.app.conf('static', 'base_dir')
+            'tools.staticdir.dir': self.staticdir
         }

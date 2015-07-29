@@ -4,3 +4,6 @@ data/votes.db
 votes.conf
 static/generated
 .cache
+ghostdriver.log
+.coverage
+tests.functional.*
