@@ -6,6 +6,8 @@ import copy, tempfile, os
 
 class FunctionalTestCase:
 
+    database_input = {'systems': [], 'questions': []}
+
     default_config = {
         '/': {'request.dispatch': cherrypy.dispatch.MethodDispatcher()},
         'templating': {'directory': '"templates"'},

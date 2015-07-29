@@ -46,7 +46,23 @@ class TestStaticFiles(FunctionalTestCase):
             assert system['bite'] in browser.html
             assert browser.find_link_by_href('http://localhost:8080/systems/' + str(system['id']))
 
+    def test_subsystems_page(self, browser):
+        browser.visit('http://localhost:8080/systems/1')
+        self.assert_menu_exists(browser)
+        assert self.database_input['systems'][1]['name'] in browser.html
+        assert self.database_input['systems'][1]['data'] in browser.html
+
     def test_about_page(self, browser):
         browser.visit('http://localhost:8080/about')
         self.assert_menu_exists(browser)
 
+
+class TestErrorPages(FunctionalTestCase):
+
+    def test_nonexistant_subsystems_page(self, browser):
+        browser.visit('http://localhost:8080/systems/1392')
+        assert browser.status_code == 404
+
+    def test_nonexistant_results_page(self, browser):
+        browser.visit('http://localhost:8080/results/anything_will_do_here')
+        assert browser.status_code == 404
