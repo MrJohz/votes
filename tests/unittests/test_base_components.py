@@ -74,6 +74,8 @@ class TestRestfulComponent:
 
         tr = TestRestful(object())
 
+        tr.GET()
+        assert calls[-1] == 'get'
         tr.GET('get')
         assert calls[-1] == 'get'
         tr.GET('post')
@@ -102,6 +104,10 @@ class TestRestfulComponent:
         with pytest.raises(cherrypy.HTTPError) as e:
             tr.POST('get')
         assert e.value.status == 405
+        with pytest.raises(cherrypy.NotFound):
+            tr.POST('delete')
+        with pytest.raises(cherrypy.NotFound):
+            tr.POST('unknown_method')
 
 
 class TestStaticComponent:

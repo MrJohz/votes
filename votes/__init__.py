@@ -8,7 +8,7 @@ import hashids
 import webassets
 from webassets.ext.jinja2 import AssetsExtension
 
-from . import models as m
+from . import models
 from . import utils, assets, components
 from .markdown_renderer import DewidowRenderer
 
@@ -21,7 +21,7 @@ class VoteApplication(object):
         self._config = config
         self.PRODUCTION = self.conf('general', 'production', False)
 
-        m.database.init(self.conf('database', 'file'))
+        models.database.init(self.conf('database', 'file'))
 
         self.markdown = mistune.Markdown(renderer=DewidowRenderer())
 
@@ -75,18 +75,18 @@ class VoteApplication(object):
                      filters=['pyscss', 'compressor'], output='main-%(version)s.css')
 
     def drop_tables(self):
-        m.drop_tables()
+        models.drop_tables()
 
     def create_tables(self):
-        m.create_tables()
+        models.create_tables()
 
     def dump_models(self):
-        systems, questions = m.dump_models()
+        systems, questions = models.dump_models()
         return {'systems': systems, 'questions': questions}
 
     def load_models(self, data):
         systems, questions = data['systems'], data['questions']
-        m.load_models(systems=systems, questions=questions, markdown=self.markdown)
+        models.load_models(systems=systems, questions=questions, markdown=self.markdown)
 
 
 def create_app(config):
