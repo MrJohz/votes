@@ -35,3 +35,31 @@ class TestStaticFiles(FunctionalTestCase):
         assert 'system2' in browser.html
         assert 'system3' in browser.html
         assert 'system0' not in browser.html
+        first_url = browser.url
+
+        browser.visit('http://localhost:8080/quiz')
+        browser.choose('0', '1')
+        browser.choose('1', '3')
+        browser.choose('2', '5')
+        browser.find_by_css('#quiz-submit').click()
+        assert browser.url.startswith('http://localhost:8080/results')
+        assert 'system1' in browser.html
+        assert 'system2' in browser.html
+        assert 'system3' in browser.html
+        assert 'system0' not in browser.html
+
+        assert browser.url != first_url
+        urls = [first_url, browser.url]
+
+        browser.visit('http://localhost:8080/quiz')
+        browser.choose('0', '0')
+        browser.choose('1', '2')
+        browser.choose('2', '4')
+        browser.find_by_css('#quiz-submit').click()
+        assert browser.url.startswith('http://localhost:8080/results')
+        assert 'system1' in browser.html
+        assert 'system2' in browser.html
+        assert 'system3' in browser.html
+        assert 'system0' in browser.html
+
+        assert browser.url not in urls
