@@ -3,6 +3,13 @@ from setuptools.command.test import test as TestCommand
 
 import sys
 
+USING_35 = sys.version_info[0] == 3 and sys.version_info[1] == 5
+SHIM_LIBRARIES = []
+try:
+    from unittest import mock
+except ImportError:
+    SHIM_LIBRARIES.append('mock==1.3.0')
+
 class PyTest(TestCommand):
     user_options = [
         ('pytest-args=', 'a', 'Arguments to pass to py.test'),
@@ -26,6 +33,8 @@ class PyTest(TestCommand):
         import pytest
         if self.cruel:
             self.pytest_args.extend(('--pep8', '--flakes'))
+        if USING_35:
+            self.pytest_args.append('--assert=plain')
         errno = pytest.main(self.pytest_args)
         sys.exit(errno)
 
@@ -41,7 +50,7 @@ setup(
     license='MIT',
     packages=['votes'],
     install_requires=list(open('requirements.txt')),
-    extras_require={'dev': list(open('dev-requirements.txt'))},
-    tests_require = list(open('dev-requirements.txt')),
+    extras_require={'dev': list(open('dev-requirements.txt')) + SHIM_LIBRARIES},
+    tests_require = list(open('dev-requirements.txt')) + SHIM_LIBRARIES,
     cmdclass = {'test': PyTest}
 )
