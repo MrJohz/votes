@@ -25,8 +25,8 @@ install:
   - "pip install .[dev]"
 
 script:
-  - if [ $TEST_CRUEL = "true" ] ; then "python setup.py test --cruel"; fi
-  - if [ $TEST_CRUEL = "false" ] ; then "python setup.py test"; fi
+  - 'if [ $TEST_CRUEL = "true" ] ; then python setup.py test --cruel; fi'
+  - 'if [ $TEST_CRUEL = "false" ] ; then python setup.py test; fi'
 
 after_success:
   - "coveralls --config_file=pytest.ini"
