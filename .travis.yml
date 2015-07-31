@@ -3,7 +3,6 @@ python:
   - "3.3"
   - "3.4"
   - "3.5-dev"
-  - "pypy3"
 
 env:
   matrix:  # Test once with pep8/flakes, test once without
