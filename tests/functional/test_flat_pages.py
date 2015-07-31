@@ -21,8 +21,7 @@ class TestStaticFiles(FunctionalTestCase):
             {'id': 2, 'text': 'question2', 'desc': 'question_2_description',
                 'answers': [
                     {'id': 4, 'systems': [0, 2], 'text': ''},
-                    {'id': 5, 'systems': [1, 3], 'text': ''}]}]
-        }
+                    {'id': 5, 'systems': [1, 3], 'text': ''}]}]}
 
     def assert_menu_exists(self, browser):
         for i in ('quiz', 'systems', 'about' ''):

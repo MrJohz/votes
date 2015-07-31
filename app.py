@@ -1,15 +1,17 @@
 from configparser import ConfigParser
 import json
 import cherrypy
-from votes import create_app, components
+from votes import create_app
 
 config = ConfigParser()
 config.read('votes.conf')
 
 if __name__ == "__main__":
     import sys
+    app = create_app(config)
+
     if len(sys.argv) == 1:
-        cherrypy.quickstart(create_app(config), '/', 'votes.conf')
+        cherrypy.quickstart(app, '/', 'votes.conf')
     elif sys.argv[1] == 'initialise-database':
         app.drop_tables()
         app.create_tables()

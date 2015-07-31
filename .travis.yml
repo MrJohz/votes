@@ -1,0 +1,34 @@
+language: python
+python:
+  - "3.4"
+  - "3.3"
+  - "3.5-dev"
+  - "pypy3"
+
+env:
+  matrix:  # Test once with pep8/flakes, test once without
+    - TEST_CRUEL="false"
+    - TEST_CRUEL="true"
+
+matrix:
+  allow_failures:
+    # pep8/flakes test can fail and still be considered a "pass".
+    - env: TEST_CRUEL="true"
+    # Don't worry too much if 3.5 fails - but it's nice to know if it works.
+    - python: "3.5-dev"
+
+cache:
+  directories:
+    - $HOME/.cache/pip
+
+install:
+  - "pip install .[dev]"
+
+script:
+  - if [ $TEST_CRUEL = "true" ] ; then "python setup.py test --cruel"; fi
+  - if [ $TEST_CRUEL = "false" ] ; then "python setup.py test"; fi
+
+after_success:
+  - "coveralls --config_file=pytest.ini"
+
+sudo: false

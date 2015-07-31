@@ -1,5 +1,4 @@
 import string
-import json
 from functools import lru_cache
 
 import jinja2
@@ -32,7 +31,8 @@ class VoteApplication(object):
 
         webassets.filter.register_filter(assets.CSSCompressorFilter)
 
-        self.assets_env = webassets.Environment('static/generated', 'static/generated',
+        self.assets_env = webassets.Environment(
+            'static/generated', 'static/generated',
             debug=self.conf('static', 'debug', (not self.PRODUCTION)),
             auto_build=self.conf('static', 'auto_build', (not self.PRODUCTION)))
         self.assets_env.append_path('static/js', 'static/js')

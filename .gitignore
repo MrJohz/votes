@@ -7,3 +7,4 @@ static/generated
 ghostdriver.log
 .coverage
 tests.functional.*
+.eggs

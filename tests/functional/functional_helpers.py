@@ -1,7 +1,9 @@
 from votes import create_app, models
 import peewee
 import cherrypy
-import copy, tempfile, os
+import copy
+import tempfile
+import os
 
 
 class FunctionalTestCase:

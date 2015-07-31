@@ -23,8 +23,7 @@ class TestStaticFiles(FunctionalTestCase):
             {'id': 2, 'text': 'question2', 'desc': 'question_2_description',
                 'answers': [
                     {'id': 4, 'systems': [0, 2], 'text': ''},
-                    {'id': 5, 'systems': [1, 3], 'text': ''}]}]
-        }
+                    {'id': 5, 'systems': [1, 3], 'text': ''}]}]}
 
     def test_quiz_submit(self, browser):
         browser.visit('http://localhost:8080/quiz')
