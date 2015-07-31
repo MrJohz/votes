@@ -1,5 +1,7 @@
 from functional_helpers import FunctionalTestCase
 
+import requests
+
 
 class TestStaticFiles(FunctionalTestCase):
 
@@ -63,3 +65,22 @@ class TestStaticFiles(FunctionalTestCase):
         assert 'system0' in browser.html
 
         assert browser.url not in urls
+
+    def test_no_input_produces_system_page(self, browser):
+        browser.visit('http://localhost:8080/quiz')
+        browser.find_by_css('#quiz-submit').click()
+        assert browser.url == 'http://localhost:8080/systems'
+
+    def test_ignores_invalid_integers(self):
+        r = requests.post('http://localhost:8080/quiz', data={'4': 'e'})
+        assert r.url == 'http://localhost:8080/systems'
+        r = requests.post('http://localhost:8080/quiz', data={'e': '4'})
+        assert r.url == 'http://localhost:8080/systems'
+
+    def test_ignores_question_code_doesnt_match_answer_code(self):
+        r = requests.post('http://localhost:8080/quiz', data={'0': '5'})
+        assert r.url == 'http://localhost:8080/systems'
+
+    def test_ignores_invalid_answer_id(self):
+        r = requests.post('http://localhost:8080/quiz', data={'0': '9'})
+        assert r.url == 'http://localhost:8080/systems'
